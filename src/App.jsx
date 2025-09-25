@@ -1,9 +1,16 @@
 import LandingPage from "./LandingPage";
 
+
 function App() {
   return (
     <>
-      <LandingPage />
+
+    <LandingPage />
+
+      {/* <Cart /> */}
+      {/* <ChangeEvent /> */}
+      {/* <Events /> */}
+      {/* <LandingPage /> */}
     </>
   );
 }

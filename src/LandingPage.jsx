@@ -7,6 +7,7 @@ import Navbar from "./Navbar";
 function LandingPage() {
   return (
     <>
+    
       <div style={{ border: "1px solid black" }}>
         <Navbar />
       </div>
@@ -21,7 +22,7 @@ function LandingPage() {
       <div style={{ border: "1px solid black" }}>
         <HowItWorks />
       </div>
-      <div style={{ border: "1px solid yellow" }}>
+      <div style={{  border: "1px solid yellow" }}>
         <Contact />
       </div>
       <div style={{ border: "1px solid green" }}>

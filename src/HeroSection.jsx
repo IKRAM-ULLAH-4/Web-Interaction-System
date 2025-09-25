@@ -1,6 +1,3 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
-
 import photo1 from "./assets/photo1.jpg";
 import photo2 from "./assets/photo2.jpg";
 import photo3 from "./assets/photo3.jpg";
@@ -31,8 +28,9 @@ function HeroSection() {
           <div className="col-lg-6">
             <div
               id="heroCarousel"
-              className="carousel slide shadow rounded overflow-hidden"
+              className="carousel slide shadow overflow-hidden"
               data-bs-ride="carousel"
+              data-bs-interval="3000"
             >
               <div className="carousel-inner">
                 <div className="carousel-item active">

@@ -1,76 +1,52 @@
-import "bootstrap/dist/css/bootstrap.min.css";
 import photo1 from "./assets/photo1.jpg";
 import photo2 from "./assets/photo2.jpg";
-import photo3 from "./assets/photo3.jpg"; // Use real image
+import photo3 from "./assets/photo3.jpg";
+
+const featuresData = [
+  {
+    img: photo1,
+    title: "Instant Messaging",
+    text: "Stay connected with friends and colleagues in real-time. Fast, reliable, and secure chat at your fingertips.",
+    link: "#",
+  },
+  {
+    img: photo2,
+    title: "Crystal-Clear Calls (VoIP Will try with WebRTC)",
+    text: "Enjoy seamless peer-to-peer voice calls with exceptional clarity. Connect instantly without interruptions.",
+    link: "#",
+  },
+  {
+    img: photo3,
+    title: "Smart Storage & Sharing",
+    text: "Share photos, videos, and documents effortlessly. Your files are always safe and accessible when you need them.",
+    link: "#",
+  },
+];
+
 
 function Features() {
   return (
-    <section className="py-5 bg-light" id="feature">
-      <div className="container">
-        <div className="text-center mb-5">
-          <h2 className="display-5 fw-bold"> Key Features</h2>
-          <p className="text-muted">
-            Discover what makes our platform fast, secure, and reliable.
-          </p>
-        </div>
-
-        <div className="row g-4">
-          {/* Feature 1 */}
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100 border-0 shadow-sm">
-              <img
-                src={photo1}
-                className="card-img-top"
-                alt="Instant Messaging"
-              />
-              <div className="card-body text-center">
-                <h5 className="card-title fw-bold">💬 Instant Messaging</h5>
-                <p className="card-text text-muted">
-                  Chat with your friends or colleagues instantly and securely.
-                </p>
-              </div>
-              <div className="card-footer bg-transparent border-0 text-center">
-                <small className="text-muted">Updated recently</small>
+    <section id="feature">
+      <div className="d-flex flex-wrap gap-3  justify-content-center">
+        {featuresData.map((data, Index) => {
+          console.log(Index);
+          return (
+            <div
+              key={Index}
+              className="card shadow "
+              style={{ width: "18rem" }}
+            >
+              <img src={data.img} className="card-img-top " alt={data.title} />
+              <div
+                className="card-body "
+                style={{ border: "1px solid yellow" }}
+              >
+                <h5 className="card-title">{data.title}</h5>
+                <p className="card-text">{data.text}</p>
               </div>
             </div>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100 border-0 shadow-sm">
-              <img
-                src={photo2}
-                className="card-img-top"
-                alt="Voice & Video Calls"
-              />
-              <div className="card-body text-center">
-                <h5 className="card-title fw-bold">📞 Voice & Video Calls</h5>
-                <p className="card-text text-muted">
-                  Connect with anyone via crystal-clear voice and video calls.
-                </p>
-              </div>
-              <div className="card-footer bg-transparent border-0 text-center">
-                <small className="text-muted">Updated recently</small>
-              </div>
-            </div>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="col-md-6 col-lg-4">
-            <div className="card h-100 border-0 shadow-sm">
-              <img src={photo3} className="card-img-top" alt="Cloud Storage" />
-              <div className="card-body text-center">
-                <h5 className="card-title fw-bold">☁️ Cloud Storage</h5>
-                <p className="card-text text-muted">
-                  Store and access your files securely anytime, anywhere.
-                </p>
-              </div>
-              <div className="card-footer bg-transparent border-0 text-center">
-                <small className="text-muted">Updated recently</small>
-              </div>
-            </div>
-          </div>
-        </div>
+          );
+        })}
       </div>
     </section>
   );

@@ -3,7 +3,7 @@ function Navbar() {
     <>
       <nav className="navbar navbar-expand-lg ">
         <div className="container-fluid">
-          <a className="navbar-brand" href="#">
+          <a className="navbar-brand ms-5" href="#">
             KWIS
           </a>
           <button
@@ -18,7 +18,7 @@ function Navbar() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul className="navbar-nav ms-auto">
+            <ul className="navbar-nav mx-auto">
               <li className="nav-item">
                 <a className="nav-link active" aria-current="page" href="#">
                   Home
@@ -34,8 +34,8 @@ function Navbar() {
                   How It works
                 </a>
               </li>
-              <button className="btn btn-primary ms-lg-3">Get Started</button>
             </ul>
+            <button className="btn btn-primary ms-lg-3 ">Get Started</button>
           </div>
         </div>
       </nav>
