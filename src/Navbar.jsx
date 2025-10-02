@@ -1,7 +1,7 @@
 function Navbar() {
   return (
     <>
-      <nav className="navbar navbar-expand-lg ">
+      <nav className="navbar navbar-expand-lg sticky-top ">
         <div className="container-fluid">
           <a className="navbar-brand ms-5" href="#">
             KWIS
@@ -20,7 +20,7 @@ function Navbar() {
           <div className="collapse navbar-collapse" id="navbarNavDropdown">
             <ul className="navbar-nav mx-auto">
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="#">
+              <a className="nav-link active " aria-current="page" href="#" style={{}}> 
                   Home
                 </a>
               </li>
@@ -35,7 +35,7 @@ function Navbar() {
                 </a>
               </li>
             </ul>
-            <button className="btn btn-primary ms-lg-3 ">Get Started</button>
+            <button className=" btn btn-primary ms-lg-3 postion-fix">Get Started</button>
           </div>
         </div>
       </nav>

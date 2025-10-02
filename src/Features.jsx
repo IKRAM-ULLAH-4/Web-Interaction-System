@@ -26,7 +26,7 @@ const featuresData = [
 
 function Features() {
   return (
-    <section id="feature">
+    <section id="feature" className="py-5 bg-light" style={{border:"1px solid black"}}>
       <div className="d-flex flex-wrap gap-3  justify-content-center">
         {featuresData.map((data, Index) => {
           console.log(Index);

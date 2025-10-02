@@ -41,7 +41,7 @@ function HowItWorks() {
           {
             steps.map((step, index) => (
             <div key={index} className="col-md-6 col-lg-3">
-              {console.log(index  , "and "  , step.number)}
+              {/* {console.log(index  , "and "  , step.number)} */}
               <div className="card border-0 shadow h-100 text-center p-4">
                 <div
                   className={`rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 ${step.color}`}

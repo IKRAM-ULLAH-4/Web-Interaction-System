@@ -2,8 +2,8 @@
 
 function Footer() {
   return (
-    <footer className="bg-dark text-light py-4 ">
-      <div className="container">
+    <footer className="bg-black text-light py-5 ">
+      <div className="container d-flex justify-content-center">
         <div className="row">
           <div className="col-md-4">
             <h5>KWIS</h5>

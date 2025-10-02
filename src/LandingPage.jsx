@@ -3,29 +3,33 @@ import Features from "./Features";
 import Footer from "./Footer";
 import HeroSection from "./HeroSection";
 import HowItWorks from "./HowItWorks";
+import MockupSection from "./MockupSection";
 import Navbar from "./Navbar";
 function LandingPage() {
   return (
     <>
     
-      <div style={{ border: "1px solid black" }}>
+      <div>
         <Navbar />
       </div>
 
-      <div style={{ border: "1px solid black" }}>
+      <div >
         <HeroSection />
       </div>
 
       <div>
         <Features />
       </div>
-      <div style={{ border: "1px solid black" }}>
+      <div>
+        <MockupSection />
+      </div>
+      <div style={{ border: "" }}>
         <HowItWorks />
       </div>
-      <div style={{  border: "1px solid yellow" }}>
+      <div style={{  border: "" }}>
         <Contact />
       </div>
-      <div style={{ border: "1px solid green" }}>
+      <div style={{ border: "" }}>
         <Footer />
       </div>
     </>
