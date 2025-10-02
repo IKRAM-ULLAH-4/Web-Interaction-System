@@ -1,33 +1,27 @@
 import { FaUserPlus } from "react-icons/fa";
-import LoginPage from "./LoginPage";
 import logo from "./assets/logo.png";
 
-function RegistrationPage({ onSwitch }) {
-  const handlClick = (e) => {
-    navigate("/login");
-  };
+function RegistrationPage() {
   return (
-    <div
-      className="d-flex align-items-center justify-content-center vh-100"
-      style={{ backgroundColor: "" }}
-    >
+    <div className="d-flex align-items-center justify-content-center vh-100">
       <div className="container shadow-lg rounded-4 overflow-hidden">
         <div className="row">
           {/* Left Side - Branding */}
           <div
-            className="col-md-6 d-flex flex-column align-items-center justify-content-center text-white p-5"
+            className="col-lg-6 d-flex flex-column align-items-center justify-content-center text-white p-5"
             style={{
               background: "linear-gradient(135deg, #007bff, #6610f2)",
-              minHeight: "400px",
+              minHeight: "300px",
+              // maxHeight: "250px",
             }}
           >
             <img
               src={logo}
               alt="Logo"
-              className="mb-2"
-              style={{ width: "250px", height: "250px" }}
+              className="mb-3 img-fluid"
+              style={{ maxWidth: "200px" }}
             />
-            <h1 className="fw-bold">Kwick Chat</h1>
+            <h1 className="fw-bold text-center">Kwick Chat</h1>
             <p className="text-center" style={{ maxWidth: "300px" }}>
               A smarter way to connect with people. Join now and be part of the
               conversation.
@@ -36,12 +30,11 @@ function RegistrationPage({ onSwitch }) {
 
           {/* Right Side - Registration Form */}
           <div
-            className="col-md-6 d-flex align-items-center justify-content-center bg-white p-5"
-            style={{ minHeight: "800px" }}
+            className="col-lg-6 d-flex align-items-center justify-content-center bg-white p-4"
+            style={{ minHeight: "400px" }}
           >
             <div className="w-100" style={{ maxWidth: "350px" }}>
               <div className="text-center mb-4">
-                {/* <img src={logo} alt="" /> */}
                 <FaUserPlus size={40} color="#007bff" />
                 <h3 className="mt-2 fw-bold">Register</h3>
                 <p className="text-muted">Create your Kwick account</p>
@@ -74,10 +67,7 @@ function RegistrationPage({ onSwitch }) {
                 <button className="btn btn-primary w-100">Sign Up</button>
               </form>
               <p className="text-center mt-3 text-muted">
-                Already have an account?{" "}
-                <a href="#" onClick={handlClick}>
-                  Login
-                </a>
+                Already have an account? <a href="#">Login</a>
               </p>
             </div>
           </div>

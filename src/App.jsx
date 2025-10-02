@@ -7,7 +7,7 @@ function App() {
     <>
       <RegistrationPage />
 
-      <LoginPage />
+      {/* <LoginPage /> */}
 
       {/* <LandingPage /> */}
 
