@@ -1,18 +1,16 @@
-
-
 function Footer() {
   return (
     <footer className="bg-black text-light py-5 ">
-      <div className="container d-flex justify-content-center">
+      <div className="container d-flex justify-content-center text-center">
         <div className="row">
           <div className="col-md-4">
             <h5>KWIS</h5>
             <p className="small">
-               {new Date().getFullYear()} KWIS. All rights reserved.
+              {new Date().getFullYear()} KWIS. All rights reserved.
             </p>
           </div>
 
-          <div className="col-md-4">
+          <div className="col-md-4 ">
             <h6>Quick Links</h6>
             <ul className="list-unstyled">
               <li>

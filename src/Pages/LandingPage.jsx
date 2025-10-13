@@ -1,19 +1,18 @@
-import Contact from "./Contact";
-import Features from "./Features";
-import Footer from "./Footer";
-import HeroSection from "./HeroSection";
-import HowItWorks from "./HowItWorks";
-import MockupSection from "./MockupSection";
-import Navbar from "./Navbar";
+import Features from "../Components/Features";
+import Footer from "../Components/Footer";
+import HeroSection from "../Components/HeroSection";
+import MockupSection from "../Components/MockupSection";
+import Navbar from "../Components/Navbar";
+import Contact from "../Components/Contact";
+import HowItWorks from "../Components/HowItWorks";
 function LandingPage() {
   return (
     <>
-    
       <div>
         <Navbar />
       </div>
 
-      <div >
+      <div>
         <HeroSection />
       </div>
 
@@ -26,7 +25,7 @@ function LandingPage() {
       <div style={{ border: "" }}>
         <HowItWorks />
       </div>
-      <div style={{  border: "" }}>
+      <div style={{ border: "" }}>
         <Contact />
       </div>
       <div style={{ border: "" }}>

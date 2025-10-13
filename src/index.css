@@ -3,6 +3,13 @@
   box-shadow: none !important; /* removes the glow */
 }
 
+#RegLeft {
+  background: linear-gradient(135deg, #007bff, #6610f2);
+  /* "linear-gradient(135deg, #007bff, #6610f2)"; */
+  /* minHeight: "300px", */
+  /* // maxHeight: "250px", */
+}
+
 /* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

@@ -1,6 +1,6 @@
-import photo1 from "./assets/photo1.jpg";
-import photo2 from "./assets/photo2.jpg";
-import photo3 from "./assets/photo3.jpg";
+import photo1 from "../assets/photo1.jpg";
+import photo2 from "../assets/photo2.jpg";
+import photo3 from "../assets/photo3.jpg";
 
 const featuresData = [
   {
@@ -23,10 +23,14 @@ const featuresData = [
   },
 ];
 
-
 function Features() {
   return (
-    <section id="feature" className="py-5 bg-light" style={{border:"1px solid black"}}>
+    <section
+      id="feature"
+      className="py-5 bg-light"
+      style={{ border: "1px solid black" }}
+    >
+      <h2 className="text-center mb-4 fw-bold">Features</h2>
       <div className="d-flex flex-wrap gap-3  justify-content-center">
         {featuresData.map((data, Index) => {
           console.log(Index);

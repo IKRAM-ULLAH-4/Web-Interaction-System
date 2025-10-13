@@ -1,6 +1,6 @@
 function Contact() {
   const btnHandle = (e) => {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault();
     alert("Message sent successfully ✅");
   };
 

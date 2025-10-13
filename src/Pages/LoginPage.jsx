@@ -1,17 +1,46 @@
-import loginphoto from "./assets/loginPage_photo.png";
+import { useRef } from "react";
+import loginphoto from "../assets/loginPage_photo.png";
+import { Link, useNavigate } from "react-router-dom";
 
 function LoginPage() {
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const navigate = useNavigate();
+
+  const signUpClicked = (e) => {
+    e.preventDefault();
+
+    const emailValue = emailRef.current.value.trim();
+    const passwordValue = passwordRef.current.value.trim();
+
+    // Gmail validation regex
+    const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
+    if (!emailValue) {
+      alert("Please enter your email!");
+      return;
+    }
+    if (!gmailPattern.test(emailValue)) {
+      alert("Please enter a valid Gmail address (must end with @gmail.com)");
+      return;
+    }
+    if (!passwordValue) {
+      alert("Please enter your password!");
+      return;
+    }
+
+    // All good → go to profile page with email
+    navigate("/profile", { state: { email: emailValue } });
+  };
+
   return (
     <div className="d-flex align-items-center justify-content-center vh-100">
       <div
         className="container rounded-4 shadow-lg overflow-hidden"
-        style={{
-          backgroundColor: "#a06060ff",
-          minHeight: "400px",
-        }}
+        style={{ backgroundColor: "#a06060ff", minHeight: "400px" }}
       >
         <div className="row">
-          {/* Branding / Illustration */}
+          {/* Left Panel */}
           <div
             className="col-lg-6 d-flex flex-column align-items-center justify-content-center text-white p-5 order-1 order-lg-2"
             style={{
@@ -33,7 +62,7 @@ function LoginPage() {
             </div>
           </div>
 
-          {/* Login Form */}
+          {/* Right Panel (Login Form) */}
           <div
             className="col-lg-6 d-flex flex-column justify-content-center p-5 order-2 order-lg-1"
             style={{ backgroundColor: "#ffffff", minHeight: "400px" }}
@@ -43,14 +72,11 @@ function LoginPage() {
                 className="bi bi-chat-dots-fill"
                 style={{ fontSize: "3rem", color: "black" }}
               ></i>
-              <h3 className="fw-bold mt-3" style={{ color: "black" }}>
-                Welcome Back
-              </h3>
+              <h3 className="fw-bold mt-3 text-black">Welcome Back</h3>
               <p className="text-muted">Login to access your account</p>
             </div>
 
             <form>
-              {/* Email */}
               <div className="mb-3">
                 <label className="form-label text-black">Email</label>
                 <div className="input-group">
@@ -58,14 +84,14 @@ function LoginPage() {
                     <i className="bi bi-envelope"></i>
                   </span>
                   <input
+                    ref={emailRef}
                     type="email"
                     className="form-control"
-                    placeholder="user@gmail.com"
+                    placeholder="Enter your Gmail address"
                   />
                 </div>
               </div>
 
-              {/* Password */}
               <div className="mb-4">
                 <label className="form-label text-black">Password</label>
                 <div className="input-group">
@@ -73,6 +99,7 @@ function LoginPage() {
                     <i className="bi bi-lock"></i>
                   </span>
                   <input
+                    ref={passwordRef}
                     type="password"
                     className="form-control"
                     placeholder="Enter your password"
@@ -80,16 +107,19 @@ function LoginPage() {
                 </div>
               </div>
 
-              {/* Sign In Button */}
-              <button className="btn btn-primary w-100 fw-bold">Sign In</button>
+              <button
+                className="btn btn-primary w-100 fw-bold"
+                onClick={signUpClicked}
+              >
+                Sign In
+              </button>
             </form>
 
-            {/* Switch to Register */}
             <p className="text-center mt-3 text-muted">
               Don't have an account?{" "}
-              <a href="#" className="text-primary">
+              <Link to="/register" className="text-primary">
                 Sign Up
-              </a>
+              </Link>
             </p>
           </div>
         </div>
