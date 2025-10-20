@@ -1,17 +1,14 @@
 import React, { useState, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import defaultProfile from "../assets/photo3.jpg";
+import { Link } from "react-router-dom";
 
 export default function ProfilePage() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const emailFromLogin = location.state?.email || "unknown@gmail.com";
   const [profileImage, setProfileImage] = useState(defaultProfile);
   const [name, setName] = useState("");
+  const [email] = useState("unknown@gmail.com"); // static default email
   const fileInputRef = useRef(null);
 
-  // handle image upload
+  // ✅ Handle image upload
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -26,21 +23,11 @@ export default function ProfilePage() {
 
   // ✅ Save & Continue Button
   const handleSaveAndContinue = (e) => {
-    e.preventDefault();
-
     if (!name.trim()) {
       alert("Please enter your full name before continuing!");
+      e.preventDefault();
       return;
     }
-
-    // Navigate to ChatApp and pass profile data
-    navigate("/homepage", {
-      state: {
-        name,
-        email: emailFromLogin,
-        profileImage,
-      },
-    });
   };
 
   return (
@@ -112,7 +99,7 @@ export default function ProfilePage() {
             <input
               type="email"
               className="form-control bg-light text-dark border"
-              value={emailFromLogin}
+              value={email}
               readOnly
             />
           </div>
@@ -132,13 +119,16 @@ export default function ProfilePage() {
         </div>
 
         {/* ✅ Save & Continue Button */}
-        <button
-          type="button"
-          className="btn btn-primary w-100 fw-semibold mt-3"
-          onClick={handleSaveAndContinue}
-        >
-          Save & Continue to Chat
-        </button>
+
+        <Link to="/homepage">
+          <button
+            type="button"
+            className="btn btn-primary w-100 fw-semibold mt-3"
+            onClick={handleSaveAndContinue}
+          >
+            Save & Continue
+          </button>
+        </Link>
       </div>
     </div>
   );

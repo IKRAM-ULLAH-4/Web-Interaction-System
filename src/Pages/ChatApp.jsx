@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { FiSettings } from "react-icons/fi";
 
 import person1 from "../assets/logo.png";
@@ -12,10 +11,8 @@ import ChatList from "../Components/ChatList";
 import ChatContainer from "../Components/ChatContainer";
 
 function ChatApp() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const user = location.state?.user || {
+  // Default user info
+  const user = {
     name: "Guest User",
     email: "guest@gmail.com",
     profileImage: person1,
@@ -50,9 +47,8 @@ function ChatApp() {
     ? messages[selectedContact.id] || []
     : [];
 
-  // ✅ Go to Settings Page
   const goToSettings = () => {
-    navigate("/settings", { state: { user } });
+    alert("Settings feature is currently disabled.");
   };
 
   return (
@@ -66,7 +62,7 @@ function ChatApp() {
           selectedContact ? "d-none d-md-flex" : "d-flex"
         }`}
       >
-        {/* ✅ Sidebar Header with Dynamic User Info */}
+        {/* Sidebar Header */}
         <div className="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
             <img

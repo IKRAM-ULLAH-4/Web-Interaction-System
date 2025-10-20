@@ -1,36 +1,17 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import loginphoto from "../assets/loginPage_photo.png";
 import { Link, useNavigate } from "react-router-dom";
 
 function LoginPage() {
-  const emailRef = useRef();
-  const passwordRef = useRef();
-  const navigate = useNavigate();
-
-  const signUpClicked = (e) => {
+  const [Data, setData] = useState({});
+  const handleChange = (e) => {
     e.preventDefault();
-
-    const emailValue = emailRef.current.value.trim();
-    const passwordValue = passwordRef.current.value.trim();
-
-    // Gmail validation regex
-    const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-
-    if (!emailValue) {
-      alert("Please enter your email!");
-      return;
-    }
-    if (!gmailPattern.test(emailValue)) {
-      alert("Please enter a valid Gmail address (must end with @gmail.com)");
-      return;
-    }
-    if (!passwordValue) {
-      alert("Please enter your password!");
-      return;
-    }
-
-    // All good → go to profile page with email
-    navigate("/profile", { state: { email: emailValue } });
+    setData({ ...Data, [e.target.name]: e.target.value });
+  };
+  const handleClick = (e) => {
+    e.preventDefault();
+    console.log(Data.email);
+    console.log(Data.password);
   };
 
   return (
@@ -84,8 +65,9 @@ function LoginPage() {
                     <i className="bi bi-envelope"></i>
                   </span>
                   <input
-                    ref={emailRef}
                     type="email"
+                    name="email"
+                    onChange={handleChange}
                     className="form-control"
                     placeholder="Enter your Gmail address"
                   />
@@ -99,8 +81,9 @@ function LoginPage() {
                     <i className="bi bi-lock"></i>
                   </span>
                   <input
-                    ref={passwordRef}
                     type="password"
+                    name="password"
+                    onChange={handleChange}
                     className="form-control"
                     placeholder="Enter your password"
                   />
@@ -109,7 +92,7 @@ function LoginPage() {
 
               <button
                 className="btn btn-primary w-100 fw-bold"
-                onClick={signUpClicked}
+                onClick={handleClick}
               >
                 Sign In
               </button>

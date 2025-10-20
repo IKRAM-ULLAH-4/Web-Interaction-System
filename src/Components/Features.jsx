@@ -33,7 +33,7 @@ function Features() {
       <h2 className="text-center mb-4 fw-bold">Features</h2>
       <div className="d-flex flex-wrap gap-3  justify-content-center">
         {featuresData.map((data, Index) => {
-          console.log(Index);
+          // console.log(Index);
           return (
             <div
               key={Index}

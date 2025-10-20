@@ -1,22 +1,22 @@
 import { FaUserPlus } from "react-icons/fa";
 import logo from "../assets/logo.png";
 import { Link } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
-function RegistrationPage() {
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
-  const FullNameRef = useRef(null);
-  const btnRef = useRef(null);
+function RegistrationPage() 
+{
+  const [Data , setData] = useState({});
+  
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
     e.preventDefault();
-
-    console.log(FullNameRef.current.value);
-    console.log(emailRef.current.value);
-    console.log(passwordRef.current.value);
-    console.log(btnRef.current.value);
+    setData({...Data , [e.target.name]:e.target.value})
   };
+  const handleClick = (e)=>
+  {
+    e.preventDefault();
+    console.log(Data.email , " and " , Data.fullName , " and " , Data.password);
+  }
 
   return (
     <div className="d-flex align-items-center justify-content-center vh-100">
@@ -51,12 +51,14 @@ function RegistrationPage() {
                 <h3 className="mt-2 fw-bold">Register</h3>
                 <p className="text-muted">Create your Kwick account</p>
               </div>
-              <form onSubmit={handleSubmit}>
+              <form>
                 <div className="mb-3">
                   <label>Full Name</label>
                   <input
-                    ref={FullNameRef}
+
                     type="text"
+                    name="fullName"
+                    onChange={handleChange}
                     className="form-control"
                     placeholder="Full Name"
                   />
@@ -64,8 +66,10 @@ function RegistrationPage() {
                 <div className="mb-3">
                   <label>Email</label>
                   <input
-                    ref={emailRef}
+                    
                     type="email"
+                    name="email"
+                    onChange={handleChange}
                     className="form-control"
                     placeholder="Email"
                   />
@@ -73,15 +77,18 @@ function RegistrationPage() {
                 <div className="mb-3">
                   <label>Password</label>
                   <input
-                    ref={passwordRef}
+                    
                     type="password"
+                    name="password"
+                    onChange={handleChange}
+                    
                     className="form-control"
                     placeholder="Password"
                   />
                 </div>
                 <button
-                  ref={btnRef}
                   value="Sign Up"
+                  onClick={handleClick}
                   className="btn btn-primary w-100"
                 >
                   Sign Up
