@@ -22,7 +22,7 @@ app.use(
   })
 );
 
-// Serve uploads folder statically
+// Serve uploads folder statically (optional in serverless — fine for static reads)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -39,17 +39,33 @@ app.use((err, req, res, next) => {
 let isConnected = false;
 const connectDB = async () => {
   if (isConnected) return;
-  const MONGO = process.env.MONGO_URI;
-  if (!MONGO) throw new Error("MONGO_URI not set");
-  await mongoose.connect(MONGO, { useNewUrlParser: true, useUnifiedTopology: true });
+  // Accept either MONGODB_URI or MONGO_URI (more tolerant)
+  const MONGO =
+    process.env.MONGODB_URI?.trim() || process.env.MONGO_URI?.trim();
+  if (!MONGO) {
+    throw new Error("MONGODB_URI (or MONGO_URI) not set");
+  }
+  // Options are not strictly needed on mongoose v6+, but safe to include
+  await mongoose.connect(MONGO, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
   console.log("Mongo connected");
   isConnected = true;
 };
 
 // Vercel serverless handler
 export default async function handler(req, res) {
-  await connectDB(); // Ensure DB is connected
+  try {
+    await connectDB(); // Ensure DB is connected before handling
+  } catch (err) {
+    console.error("DB connect failed:", err);
+    // Return 500 so client sees a clear error during invocations
+    res.status(500).json({ message: "Database connection failed" });
+    return;
+  }
 
-  // Use Express to handle the request
+  // Use the Express app to handle the request
+  // (do NOT call app.listen in serverless)
   app(req, res);
 }
