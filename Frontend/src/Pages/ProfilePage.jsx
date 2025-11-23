@@ -24,9 +24,10 @@ export default function ProfilePage() {
           // me.user.avatar is expected to be an absolute URL after backend fix
           setProfileImage(me.user.avatar ? me.user.avatar : defaultProfile);
         }
-      } catch (err) {
+      } 
+      //catch (err) {
         // not authenticated — keep defaults
-      }
+     // }
     })();
   }, []);
 

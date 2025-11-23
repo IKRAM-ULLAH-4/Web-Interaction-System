@@ -12,7 +12,7 @@ function AdminSteps() {
   });
 
   const fetchSteps = () => {
-    fetch("http://localhost:5000/api/steps")
+    fetch("https://web-interaction-system.vercel.app/api/steps")
       .then(res => res.json())
       .then(data => setSteps(data));
   };
@@ -26,7 +26,7 @@ function AdminSteps() {
   };
 
   const createStep = () => {
-    fetch("http://localhost:5000/api/steps", {
+    fetch("https://web-interaction-system.vercel.app/api/steps", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -40,7 +40,7 @@ function AdminSteps() {
   };
 
   const deleteStep = (id) => {
-    fetch(`http://localhost:5000/api/steps/${id}`, {
+    fetch(`https://web-interaction-system.vercel.app/api/steps/${id}`, {
       method: "DELETE",
       headers: {
         "x-admin-token": ADMIN_TOKEN

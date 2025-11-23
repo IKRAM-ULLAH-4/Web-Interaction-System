@@ -34,7 +34,7 @@ export const createCredentials = async (req, res) => {
       fullName,
       email,
       password: hashed,
-      avatar: "/uploads/default-avatar.png",
+      avatar: "/uploads/Ikram.jpeg",
     });
 
     await newUser.save();

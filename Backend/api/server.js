@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import path from "path";
 import { fileURLToPath } from "url";
-import apiRoutes from "./routes/index.js";
+import apiRoutes from "../routes/index.js";
 
 dotenv.config();
 

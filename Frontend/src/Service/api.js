@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "http://localhost:5000/api";
+const baseURL = "https://web-interaction-system.vercel.app/api";
 
 const instance = axios.create({
   baseURL,
