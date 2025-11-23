@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:3000";
 
-
+// Middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -29,20 +29,27 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api", apiRoutes);
 
+// Error handler
 app.use((err, req, res, next) => {
   console.error("Unhandled error:", err);
   res.status(500).json({ message: "Server error" });
 });
 
-const PORT = process.env.PORT || 5000;
-const MONGO = process.env.MONGO_URI 
+// MongoDB connection helper
+let isConnected = false;
+const connectDB = async () => {
+  if (isConnected) return;
+  const MONGO = process.env.MONGO_URI;
+  if (!MONGO) throw new Error("MONGO_URI not set");
+  await mongoose.connect(MONGO, { useNewUrlParser: true, useUnifiedTopology: true });
+  console.log("Mongo connected");
+  isConnected = true;
+};
 
-mongoose
-  .connect(MONGO, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => {
-    console.log("Mongo connected");
-    app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
-  })
-  .catch((err) => {
-    console.error("Mongo connection error", err);
-  });
+// Vercel serverless handler
+export default async function handler(req, res) {
+  await connectDB(); // Ensure DB is connected
+
+  // Use Express to handle the request
+  app(req, res);
+}

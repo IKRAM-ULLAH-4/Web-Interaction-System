@@ -3,7 +3,6 @@ import defaultProfile from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { updateProfile, getCurrentUser } from "../Service/api";
 
-
 export default function ProfilePage() {
   const [profileImage, setProfileImage] = useState(defaultProfile);
   const [name, setName] = useState("");
@@ -24,10 +23,10 @@ export default function ProfilePage() {
           // me.user.avatar is expected to be an absolute URL after backend fix
           setProfileImage(me.user.avatar ? me.user.avatar : defaultProfile);
         }
-      } 
-      //catch (err) {
+      } catch (err) {
         // not authenticated — keep defaults
-     // }
+        console.log(err);
+      }
     })();
   }, []);
 
