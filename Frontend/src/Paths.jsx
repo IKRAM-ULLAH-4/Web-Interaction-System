@@ -13,6 +13,8 @@ import AdminDashboard from "./AdminDashBoard/AdminDashboard";
 import AdminSteps from "./AdminDashBoard/AdminSteps";
 import Users from "./AdminDashBoard/Users";
 import AdminPage from "./Pages/AdminPage";
+import PaymentSuccessPage from "./Pages/PaymentSuccesPage";
+import PaymentCancel from "./Pages/PaymentCancelPage";
 
 const router = createBrowserRouter([
   { path: "/", element: <LandingPage /> },
@@ -29,6 +31,9 @@ const router = createBrowserRouter([
   { path: "/adminActivities", element: <AdminDashboard /> },
   { path: "/admin/steps", element: <AdminSteps /> },
   { path: "/u", element: <Users /> },
+
+  { path: "/premium-success", element: <PaymentSuccessPage /> },
+  { path: "/premium-cancel", element: <PaymentCancel /> },
 ]);
 
 export default router;

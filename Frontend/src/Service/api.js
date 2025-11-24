@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "https://web-interaction-system.vercel.app/api";
+const baseURL = "https://backend-ezzm.onrender.com/api";
 
 const instance = axios.create({
   baseURL,
@@ -20,7 +20,7 @@ export const loginUser = async (userData) => {
     const response = await instance.post("/login", userData);
     return response.data;
   } catch (error) {
-    throw error.response?.data || { message: "Server error" };
+    throw error.response?.data || { message: "Dlta  error" };
   }
 };
 
@@ -119,5 +119,15 @@ export const getSteps = async () => {
     return response.data;
   } catch (error) {
     throw error.response?.data || { message: "Failed to fetch steps" };
+  }
+};
+
+// Stripe: Create checkout session (ADDED)
+export const createCheckoutSession = async () => {
+  try {
+    const response = await instance.post("/create-checkout-session");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "Failed to start payment" };
   }
 };

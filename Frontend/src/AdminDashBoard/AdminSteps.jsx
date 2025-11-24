@@ -8,13 +8,13 @@ function AdminSteps() {
     number: "",
     color: "",
     title: "",
-    description: ""
+    description: "",
   });
 
   const fetchSteps = () => {
-    fetch("https://web-interaction-system.vercel.app/api/steps")
-      .then(res => res.json())
-      .then(data => setSteps(data));
+    fetch("https://backend-ezzm.onrender.com/steps")
+      .then((res) => res.json())
+      .then((data) => setSteps(data));
   };
 
   useEffect(() => {
@@ -22,17 +22,17 @@ function AdminSteps() {
   }, []);
 
   const handleChange = (e) => {
-    setForm({...form, [e.target.name]: e.target.value});
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const createStep = () => {
-    fetch("https://web-interaction-system.vercel.app/api/steps", {
+    fetch("https://backend-ezzm.onrender.com/steps", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-admin-token": ADMIN_TOKEN
+        "x-admin-token": ADMIN_TOKEN,
       },
-      body: JSON.stringify(form)
+      body: JSON.stringify(form),
     }).then(() => {
       fetchSteps();
       setForm({ number: "", color: "", title: "", description: "" });
@@ -40,11 +40,11 @@ function AdminSteps() {
   };
 
   const deleteStep = (id) => {
-    fetch(`https://web-interaction-system.vercel.app/api/steps/${id}`, {
+    fetch(`https://backend-ezzm.onrender.com/steps/${id}`, {
       method: "DELETE",
       headers: {
-        "x-admin-token": ADMIN_TOKEN
-      }
+        "x-admin-token": ADMIN_TOKEN,
+      },
     }).then(() => fetchSteps());
   };
 
@@ -54,12 +54,38 @@ function AdminSteps() {
 
       <div className="card p-4 my-4 shadow">
         <h5>Add New Step</h5>
-        <input name="number" value={form.number} onChange={handleChange} placeholder="Step Number" className="form-control mb-2" />
-        <input name="color" value={form.color} onChange={handleChange} placeholder="Color Classes" className="form-control mb-2" />
-        <input name="title" value={form.title} onChange={handleChange} placeholder="Title" className="form-control mb-2" />
-        <textarea name="description" value={form.description} onChange={handleChange} placeholder="Description" className="form-control mb-2" />
+        <input
+          name="number"
+          value={form.number}
+          onChange={handleChange}
+          placeholder="Step Number"
+          className="form-control mb-2"
+        />
+        <input
+          name="color"
+          value={form.color}
+          onChange={handleChange}
+          placeholder="Color Classes"
+          className="form-control mb-2"
+        />
+        <input
+          name="title"
+          value={form.title}
+          onChange={handleChange}
+          placeholder="Title"
+          className="form-control mb-2"
+        />
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          placeholder="Description"
+          className="form-control mb-2"
+        />
 
-        <button className="btn btn-primary" onClick={createStep}>Add Step</button>
+        <button className="btn btn-primary" onClick={createStep}>
+          Add Step
+        </button>
       </div>
 
       <h4>Existing Steps</h4>
@@ -74,14 +100,14 @@ function AdminSteps() {
           </tr>
         </thead>
         <tbody>
-          {steps.map(step => (
+          {steps.map((step) => (
             <tr key={step._id}>
               <td>{step.number}</td>
               <td>{step.title}</td>
               <td>{step.color}</td>
               <td>{step.description}</td>
               <td>
-                <button 
+                <button
                   className="btn btn-danger btn-sm"
                   onClick={() => deleteStep(step._id)}
                 >
@@ -92,7 +118,6 @@ function AdminSteps() {
           ))}
         </tbody>
       </table>
-
     </div>
   );
 }

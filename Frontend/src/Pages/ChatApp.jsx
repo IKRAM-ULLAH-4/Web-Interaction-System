@@ -14,7 +14,7 @@ function ChatApp() {
     fullName: "Guest User",
     name: "Guest User",
     email: "guest@gmail.com",
-    profileImage: "/images/logo.png",
+    profileImage: "/uploads/Ikram.",
   });
 
   const [contacts, setContacts] = useState([]);

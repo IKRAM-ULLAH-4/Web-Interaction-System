@@ -5,6 +5,7 @@ import MockupSection from "../Components/MockupSection";
 import Navbar from "../Components/Navbar";
 import Contact from "../Components/Contact";
 import HowItWorks from "../Components/HowItWorks";
+import UpgradeButton from "../Components/UpgradeButton";
 import { Link } from "react-router-dom";
 function LandingPage() {
   return (
