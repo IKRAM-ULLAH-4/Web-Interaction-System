@@ -5,7 +5,8 @@ const COOKIE_NAME = process.env.JWT_COOKIE_NAME || "token";
 export default function auth(req, res, next) {
   try {
     let token;
-    if (req.cookies && req.cookies[COOKIE_NAME]) token = req.cookies[COOKIE_NAME];
+    if (req.cookies && req.cookies[COOKIE_NAME])
+      token = req.cookies[COOKIE_NAME];
     if (!token && req.headers.authorization) {
       const parts = req.headers.authorization.split(" ");
       if (parts.length === 2 && parts[0] === "Bearer") token = parts[1];
