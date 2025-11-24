@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import defaultProfile from "../assets/logo.png";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { updateProfile, getCurrentUser } from "../Service/api";
 
 export default function ProfilePage() {
@@ -99,21 +99,21 @@ export default function ProfilePage() {
           <p className="text-muted small">
             Click the camera icon to upload a new picture
           </p>
-          <button
-            type="button"
-            className="btn btn-dark btn-sm rounded-circle position-absolute bottom-0 end-0"
-            style={{
-              transform: "translate(-330%, -100%)",
-              width: "36px",
-              height: "36px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onClick={handleCameraClick}
-          >
-            <i className="bi bi-camera"></i>
-          </button>
+            <button
+              type="button"
+              className="btn btn-dark btn-sm rounded-circle position-absolute bottom-0 end-0"
+              style={{
+                transform: "translate(-330%, -100%)",
+                width: "36px",
+                height: "36px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+              onClick={handleCameraClick}
+            >
+              <i className="bi bi-camera"></i>
+            </button>
           <input
             type="file"
             accept="image/*"

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { logoutUser, getCurrentUser, updateProfile } from "../Service/api";
 import UpgradeButton from "../Components/UpgradeButton";
+import { Link } from "react-router-dom";
 
 const MAX_DISPLAY_NAME_CHARS = 20;
 const MAX_BIO_CHARS = 100;
@@ -13,12 +14,12 @@ export default function SettingsPage() {
 
   const [user, setUser] = useState({
     id: null,
-    fullName: "Alex Morgan",
-    name: "Alex Morgan",
+    fullName: "Nothing ",
+    name: "Newone",
     email: "guest@gmail.com",
-    avatar: "/uploads/defaul.jpeg",
-    username: "alexmorgan",
-    bio: "Coffee enthusiast ☕ | Tech lover 💻",
+    avatar: "/uploads/Ikram.jpeg",
+    username: "NewOne",
+    bio: "Coffee enthusiast ☕ | Tech lover ",
     status: "Available",
     ...passedUser,
   });
@@ -207,9 +208,11 @@ export default function SettingsPage() {
                     Update your profile picture. Recommended: 400x400px
                   </p>
                   <div className="d-flex">
-                    <button className="btn btn-primary btn-sm me-2">
-                      Upload Photo
-                    </button>
+                    <Link to="/profile">
+                      <button className="btn btn-primary btn-sm me-2">
+                        Upload Photo
+                      </button>
+                    </Link>
                     <button className="btn btn-outline-secondary btn-sm">
                       Remove
                     </button>

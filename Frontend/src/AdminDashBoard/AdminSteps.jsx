@@ -12,7 +12,9 @@ function AdminSteps() {
   });
 
   const fetchSteps = () => {
-    fetch("https://backend-ezzm.onrender.com/steps")
+    const url = "http://localhost:5000/steps"
+    // const url = "https://backend-ezzm.onrender.com/steps";
+    fetch(url)
       .then((res) => res.json())
       .then((data) => setSteps(data));
   };
@@ -26,7 +28,9 @@ function AdminSteps() {
   };
 
   const createStep = () => {
-    fetch("https://backend-ezzm.onrender.com/steps", {
+    const url = "http://localhost:5000/steps"
+    // const url = "https://backend-ezzm.onrender.com/steps";
+    fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -40,7 +44,10 @@ function AdminSteps() {
   };
 
   const deleteStep = (id) => {
-    fetch(`https://backend-ezzm.onrender.com/steps/${id}`, {
+    const url = "http://localhost:5000/steps/"
+    // const url = "https://backend-ezzm.onrender.com/steps/";
+
+    fetch(`${url}/${id}`, {
       method: "DELETE",
       headers: {
         "x-admin-token": ADMIN_TOKEN,

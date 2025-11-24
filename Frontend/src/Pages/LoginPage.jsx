@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { z } from 'zod'
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 // import { zodResolver } from "@hookform/resolvers/zod";
 // import loginphoto from "../assets/loginPage_photo.png"
@@ -32,7 +32,9 @@ function LoginPage() {
     setLoading(true);
     try {
       const response = await loginUser(data);
-      alert(response.message || "Login successful");
+      console.log(response);
+
+      // alert(response.message || "Login successful");
       setLoggedIn(true);
       reset();
     } catch (err) {
