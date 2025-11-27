@@ -1,48 +1,59 @@
 import React, { useState, useRef, useEffect } from "react";
 import defaultProfile from "../assets/logo.png";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { updateProfile, getCurrentUser } from "../Service/api";
+
+const BACKEND_URL = "http://localhost:5000";
 
 export default function ProfilePage() {
   const [profileImage, setProfileImage] = useState(defaultProfile);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const fileInputRef = useRef(null);
   const [avatarFile, setAvatarFile] = useState(null);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  // Normalize avatar URL
+  const getAvatarUrl = (avatar) => {
+    if (!avatar) return defaultProfile;
+    if (avatar.startsWith("http")) return avatar;
+    return `${BACKEND_URL}${avatar}`;
+  };
+
+  // Load current user
   useEffect(() => {
-    // fetch current user if any (pre-fill)
     (async () => {
       try {
         const me = await getCurrentUser();
         if (me?.user) {
-          setName(me.user.fullName || "");
-          setEmail(me.user.email || "");
-          // me.user.avatar is expected to be an absolute URL after backend fix
-          setProfileImage(me.user.avatar ? me.user.avatar : defaultProfile);
+          const u = me.user;
+          setName(u.fullName || "");
+          setEmail(u.email || "");
+          setProfileImage(getAvatarUrl(u.avatar));
         }
       } catch (err) {
-        // not authenticated — keep defaults
-        console.log(err);
+        console.log("Could not fetch current user:", err);
       }
     })();
   }, []);
 
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file); // preview
-      setProfileImage(imageUrl);
-      setAvatarFile(file);
-    }
-  };
-
+  // Trigger file input
   const handleCameraClick = () => {
     fileInputRef.current.click();
   };
 
+  // Preview selected image
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setProfileImage(previewUrl);
+      setAvatarFile(file);
+    }
+  };
+
+  // Save profile and navigate
   const handleSaveAndContinue = async (e) => {
     e.preventDefault();
     if (!name.trim()) {
@@ -51,21 +62,23 @@ export default function ProfilePage() {
     }
     setLoading(true);
     try {
-      const res = await updateProfile({ fullName: name, avatarFile });
-      // server returns res.user with avatar as absolute URL
+      const payload = { fullName: name };
+      if (avatarFile) payload.avatarFile = avatarFile;
+
+      const res = await updateProfile(payload);
       const u = res.user;
+
       if (u?.avatar) {
-        // set server image (cache-bust by adding timestamp)
-        setProfileImage(`${u.avatar}?t=${Date.now()}`);
+        setProfileImage(getAvatarUrl(u.avatar) + `?t=${Date.now()}`);
       }
-      // navigate to homepage and pass user state
+
       navigate("/homepage", {
         state: {
           user: {
             id: u._id,
             fullName: u.fullName,
             email: u.email,
-            avatar: u.avatar,
+            avatar: getAvatarUrl(u.avatar),
           },
         },
       });
@@ -88,6 +101,7 @@ export default function ProfilePage() {
           Complete your profile to continue
         </p>
 
+        {/* Profile Photo */}
         <div className="text-center mb-4 position-relative">
           <img
             src={profileImage}
@@ -96,24 +110,24 @@ export default function ProfilePage() {
             width="120"
             height="120"
           />
-          <p className="text-muted small">
+          <p className="text-muted small mt-2">
             Click the camera icon to upload a new picture
           </p>
-            <button
-              type="button"
-              className="btn btn-dark btn-sm rounded-circle position-absolute bottom-0 end-0"
-              style={{
-                transform: "translate(-330%, -100%)",
-                width: "36px",
-                height: "36px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-              onClick={handleCameraClick}
-            >
-              <i className="bi bi-camera"></i>
-            </button>
+          <button
+            type="button"
+            className="btn btn-dark btn-sm rounded-circle position-absolute bottom-0 end-0"
+            style={{
+              transform: "translate(-330%, -100%)",
+              width: "36px",
+              height: "36px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={handleCameraClick}
+          >
+            <i className="bi bi-camera"></i>
+          </button>
           <input
             type="file"
             accept="image/*"
@@ -123,6 +137,7 @@ export default function ProfilePage() {
           />
         </div>
 
+        {/* Form */}
         <form onSubmit={handleSaveAndContinue}>
           <div className="mb-3">
             <label className="form-label text-muted small mb-1">

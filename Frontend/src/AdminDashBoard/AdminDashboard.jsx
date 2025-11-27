@@ -26,7 +26,7 @@ const AdminDashboard = () => {
   return (
     <div className="container py-4 ">
       <div className="d-flex justify-content-end">
-        <Link to="/admin" className="btn btn-secondary">
+        <Link to="/admin-menu" className="btn btn-secondary">
           Back
         </Link>
       </div>

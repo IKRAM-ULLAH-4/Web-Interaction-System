@@ -1,43 +1,95 @@
 import { useState } from "react";
+import { z } from "zod";
 
 function ModerationForm() {
   const [modData, setModData] = useState({});
-  const handleChage = (e) => {
-    setModData({ ...modData, [e.target.name]: e.target.value });
+  const [errors, setErrors] = useState({});
+
+  // ------------------------------
+  // ZOD SCHEMA
+  // ------------------------------
+  const ModSchema = z.object({
+    username: z.string().min(2, "Username is required"),
+    action: z.enum(["Warn", "Mute", "Kick", "Ban", "Unban"]),
+    securityLevel: z.enum(["Low", "Medium", "High", "Critical"]),
+    duration: z.string().min(1, "Duration is required"),
+
+    channelId: z.string().optional(),
+    reportId: z.string().optional(),
+    expiryDate: z.string().optional(),
+
+    reason: z.string().min(5, "Please provide a detailed reason"),
+    internalNotes: z.string().optional(),
+  });
+
+  // --------------------------------
+  // HANDLE CHANGES
+  // --------------------------------
+  const handleChange = (e) => {
+    setModData({
+      ...modData,
+      [e.target.name]: e.target.value,
+    });
   };
+
+  // --------------------------------
+  // SUBMIT / VALIDATE
+  // --------------------------------
   const handleClick = () => {
-    console.log(modData);
+    const result = ModSchema.safeParse(modData);
+
+    if (!result.success) {
+      const formatted = result.error.format();
+      setErrors(formatted);
+      console.error("Validation Errors:", formatted);
+      return;
+    }
+
+    setErrors({});
+    console.log("Validated Moderation Data:", result.data);
+    alert("Moderation Action Applied Successfully!");
   };
 
   return (
     <section>
       <div className="container">
         <h2>Content Moderation Form</h2>
-        <p>Manage User Voilations and apply Moderation Action</p>
+        <p>Manage user violations and apply moderation actions.</p>
+
+        {/* Display Validation Errors */}
+        {Object.keys(errors).length > 0 && (
+          <div className="alert alert-danger">
+            <strong>Fix the following errors:</strong>
+            <ul className="mt-2 mb-0">
+              {Object.entries(errors).map(([key, value]) => {
+                if (value?._errors) {
+                  return <li key={key}>{value._errors.join(", ")}</li>;
+                }
+                return null;
+              })}
+            </ul>
+          </div>
+        )}
 
         <div className="row g-4">
+          {/* USERNAME */}
           <div className="col-md-6">
-            <label htmlFor="username" className="form-label">
-              Target Username
-            </label>
+            <label className="form-label">Target Username</label>
             <input
               type="text"
-              name="Username"
-              id="username"
+              name="username"
               className="form-control"
-              onChange={handleChage}
+              onChange={handleChange}
             />
           </div>
 
+          {/* ACTION */}
           <div className="col-md-6">
-            <label htmlFor="action" className="label-form">
-              Action
-            </label>
+            <label className="form-label">Action</label>
             <select
-              name="Action"
-              id="action"
+              name="action"
               className="form-control"
-              onChange={handleChage}
+              onChange={handleChange}
             >
               <option value="Warn">Warn</option>
               <option value="Mute">Mute</option>
@@ -46,15 +98,14 @@ function ModerationForm() {
               <option value="Unban">Unban</option>
             </select>
           </div>
+
+          {/* SECURITY LEVEL */}
           <div className="col-md-6">
-            <label htmlFor="level" className="label-form">
-              Security Level
-            </label>
+            <label className="form-label">Security Level</label>
             <select
-              name="Security Level"
-              id="level"
+              name="securityLevel"
               className="form-control"
-              onChange={handleChage}
+              onChange={handleChange}
             >
               <option value="Low">Low</option>
               <option value="Medium">Medium</option>
@@ -63,89 +114,90 @@ function ModerationForm() {
             </select>
           </div>
 
+          {/* DURATION */}
           <div className="col-md-6">
-            <label htmlFor="duration" className="label-form">
-              Duration
-            </label>
+            <label className="form-label">Duration</label>
             <select
-              name="Duration"
-              id="duration"
+              name="duration"
               className="form-control"
-              onChange={handleChage}
+              onChange={handleChange}
             >
               <option value="24 hour">24 hour</option>
               <option value="7 days">7 days</option>
               <option value="15 days">15 days</option>
-              <option value="1  Month">1 Month</option>
-              <option value="Permanent">Permanantly</option>
+              <option value="1 Month">1 Month</option>
+              <option value="Permanent">Permanent</option>
             </select>
           </div>
 
+          {/* CHANNEL ID */}
           <div className="col-md-6">
-            <label htmlFor="channelID">Channel ID (Optional)</label>
+            <label>Channel ID (Optional)</label>
             <input
               type="text"
               className="form-control"
-              name="Channel ID"
-              onChange={handleChage}
+              name="channelId"
+              onChange={handleChange}
             />
           </div>
+
+          {/* REPORT ID */}
           <div className="col-md-6">
-            <label htmlFor="ReportId">Report ID (Optional)</label>
+            <label>Report ID (Optional)</label>
             <input
               type="text"
               className="form-control"
-              name="Report ID"
-              onChange={handleChage}
+              name="reportId"
+              onChange={handleChange}
             />
           </div>
+
+          {/* EXPIRY DATE */}
           <div className="col-md-12">
-            <label htmlFor="ReportId">Expiraty Date (Optional)</label>
+            <label>Expiry Date (Optional)</label>
             <input
-              type="Date"
+              type="date"
               className="form-control"
-              name="Data"
-              onChange={handleChage}
+              name="expiryDate"
+              onChange={handleChange}
             />
-            <small>When the Moderation Action Expires</small>
+            <small>When this moderation action expires</small>
           </div>
+
+          {/* REASON */}
           <div className="col-md-12">
-            <label htmlFor="reason" className="form-label">
-              Reason
-            </label>
+            <label className="form-label">Reason</label>
             <textarea
               className="form-control"
-              name="Reason"
-              id="reason"
-              placeholder="Enter the Reason for this Moderation Action..."
-              onChange={handleChage}
+              name="reason"
+              placeholder="Enter the reason for this moderation action..."
+              onChange={handleChange}
             ></textarea>
           </div>
+
+          {/* NOTES */}
           <div className="col-md-12">
-            <label htmlFor="note" className="form-label">
-              Internal Notes (Optional)
-            </label>
+            <label className="form-label">Internal Notes (Optional)</label>
             <textarea
               className="form-control"
-              name="Internal Notes"
-              id="note"
-              placeholder="Additonal Note For Moderation..."
-              onChange={handleChage}
+              name="internalNotes"
+              placeholder="Additional notes for moderators..."
+              onChange={handleChange}
             ></textarea>
-            <p className="text-muted small">
-              Private Note Not visible to Users
-            </p>
+            <p className="text-muted small">Private notes, not visible to users</p>
           </div>
         </div>
-        <div className="d-flex gap-3 mb-5">
-          <button
-            type="submit"
-            className="btn btn-primary"
-            onClick={handleClick}
-          >
+
+        {/* BUTTONS */}
+        <div className="d-flex gap-3 mb-5 mt-3">
+          <button className="btn btn-primary" onClick={handleClick}>
             Apply Action
           </button>
-          <button type="button" className="btn btn-outline-secondary">
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            onClick={() => setModData({})}
+          >
             Reset
           </button>
         </div>
@@ -153,4 +205,5 @@ function ModerationForm() {
     </section>
   );
 }
+
 export default ModerationForm;

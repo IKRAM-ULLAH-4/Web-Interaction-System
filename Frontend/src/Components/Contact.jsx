@@ -1,7 +1,26 @@
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const contactSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  message: z.string().min(5, "Message must be at least 5 characters"),
+});
+
 function Contact() {
-  const btnHandle = (e) => {
-    e.preventDefault();
-    alert("Message sent successfully ✅");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(contactSchema),
+  });
+
+  const btnHandle = (data) => {
+    console.log("Form Data:", data);
+    reset();
   };
 
   return (
@@ -18,13 +37,17 @@ function Contact() {
             Got questions or feedback? We'd love to hear from you.
           </p>
 
-          <form>
+          <form onSubmit={handleSubmit(btnHandle)}>
             <div className="mb-3">
               <input
                 type="text"
                 className="form-control form-control-lg"
                 placeholder="Your Name"
+                {...register("name")}
               />
+              {errors.name && (
+                <p className="text-danger mt-1">{errors.name.message}</p>
+              )}
             </div>
 
             <div className="mb-3">
@@ -32,7 +55,11 @@ function Contact() {
                 type="email"
                 className="form-control form-control-lg"
                 placeholder="Email Address"
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="text-danger mt-1">{errors.email.message}</p>
+              )}
             </div>
 
             <div className="mb-3">
@@ -40,13 +67,16 @@ function Contact() {
                 className="form-control form-control-lg"
                 rows="4"
                 placeholder="Write your message..."
+                {...register("message")}
               ></textarea>
+              {errors.message && (
+                <p className="text-danger mt-1">{errors.message.message}</p>
+              )}
             </div>
 
             <button
               type="submit"
               className="btn btn-primary btn-lg w-100"
-              onClick={btnHandle}
               style={{ borderRadius: "0.75rem" }}
             >
               Send Message

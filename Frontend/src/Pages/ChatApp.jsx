@@ -4,7 +4,9 @@ import { FiSettings } from "react-icons/fi";
 
 import ChatList from "../Components/ChatList";
 import ChatContainer from "../Components/ChatContainer";
-import { getUsers, getCurrentUser } from "../Service/api";
+import { getAllUsersForChat, getCurrentUser } from "../Service/api";
+
+const BACKEND_URL = "http://localhost:5000";
 
 function ChatApp() {
   const navigate = useNavigate();
@@ -12,61 +14,74 @@ function ChatApp() {
   const [currentUser, setCurrentUser] = useState({
     id: null,
     fullName: "Guest User",
-    name: "Guest User",
     email: "guest@gmail.com",
-    profileImage: "/uploads/Ikram.",
+    avatar: "/default-avatar.png",
   });
 
   const [contacts, setContacts] = useState([]);
   const [loadingContacts, setLoadingContacts] = useState(true);
   const [contactsError, setContactsError] = useState(null);
-
   const [selectedContact, setSelectedContact] = useState(null);
 
+  // Load current user
   useEffect(() => {
-    const loadUserAndContacts = async () => {
+    const loadUser = async () => {
       try {
         const me = await getCurrentUser();
         if (me?.user) {
           const u = me.user;
           setCurrentUser({
             id: u._id,
-            fullName: u.fullName || "User",
-            name: u.fullName || "User",
+            fullName: u.fullName,
             email: u.email,
-            profileImage: u.avatar || "/images/logo.png",
+            avatar: u.avatar
+              ? u.avatar.startsWith("http")
+                ? u.avatar
+                : `${BACKEND_URL}${u.avatar}`
+              : "/default-avatar.png",
           });
         }
       } catch (err) {
-        // not authenticated — keep guest
+        console.log("User not authenticated:", err);
       }
+    };
+    loadUser();
+  }, []);
 
+  // Load contacts
+  useEffect(() => {
+    if (!currentUser.email || currentUser.email === "guest@gmail.com") return;
+
+    const loadContacts = async () => {
       try {
         setLoadingContacts(true);
-        const users = await getUsers();
-        const mapped = users
+        const users = await getAllUsersForChat();
+        const filteredContacts = users
+          .filter((u) => u.email !== currentUser.email)
           .map((u) => ({
             id: u._id,
             name: u.fullName || u.email,
             fullName: u.fullName || u.email,
-            status: "offline",
-            avatar: u.avatar || "/images/logo.png",
             email: u.email,
-          }))
-          .filter((c) => c.email !== (currentUser.email || ""));
-        setContacts(mapped);
+            status: "offline",
+            avatar: u.avatar
+              ? u.avatar.startsWith("http")
+                ? u.avatar
+                : `${BACKEND_URL}${u.avatar}`
+              : "/default-avatar.png",
+          }));
+
+        setContacts(filteredContacts);
         setContactsError(null);
       } catch (err) {
-        console.error("Failed to load contacts:", err);
-        setContactsError(err?.message || "Failed to load contacts");
+        setContactsError("Failed to load contacts");
       } finally {
         setLoadingContacts(false);
       }
     };
 
-    loadUserAndContacts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    loadContacts();
+  }, [currentUser.email]);
 
   const goToSettings = () => {
     navigate("/user/settings", { state: { user: currentUser } });
@@ -77,11 +92,12 @@ function ChatApp() {
       className="d-flex flex-column flex-md-row vh-100"
       style={{ backgroundColor: "#f1efec" }}
     >
-      <div className={`bg-white col-md-3 border-end d-flex flex-column`}>
+      {/* LEFT SIDE */}
+      <div className="bg-white col-md-3 border-end d-flex flex-column">
         <div className="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
             <img
-              src={currentUser.profileImage}
+              src={currentUser.avatar || "/default-avatar.png"}
               alt="User Avatar"
               className="rounded-circle border"
               style={{ width: "45px", height: "45px", objectFit: "cover" }}
@@ -114,6 +130,7 @@ function ChatApp() {
         )}
       </div>
 
+      {/* RIGHT SIDE */}
       {selectedContact ? (
         <ChatContainer
           selectedContact={selectedContact}

@@ -1,28 +1,17 @@
+// controllers/auth.controller.js
+
 import LoginCredentials from "../models/LoginCredentials.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { generateToken } from "../utils/generateToken.js";
+import dotenv from 'dotenv'
+dotenv.config();
 
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "1h";
-const COOKIE_NAME = process.env.JWT_COOKIE_NAME || "token";
 
-function parseCookieMaxAge(exp) {
-  if (typeof exp === "number") return exp * 1000;
-  const m = (exp || "").toString().match(/^(\d+)(s|m|h|d)$/);
-  if (!m) return 60 * 60 * 1000;
-  const val = Number(m[1]);
-  switch (m[2]) {
-    case "s":
-      return val * 1000;
-    case "m":
-      return val * 60 * 1000;
-    case "h":
-      return val * 60 * 60 * 1000;
-    case "d":
-      return val * 24 * 60 * 60 * 1000;
-    default:
-      return 60 * 60 * 1000;
-  }
-}
+const COOKIE_NAME = process.env.JWT_COOKIE_NAME;
+// console.log(COOKIE_NAME);
+
+// Hardcoded: 1 hour cookie lifetime
+const COOKIE_MAX_AGE = 60 * 60 * 1000; // 1 hour in ms
 
 export const createCredentials = async (req, res) => {
   try {
@@ -34,8 +23,7 @@ export const createCredentials = async (req, res) => {
     if (existing)
       return res.status(400).json({ message: "Email already registered" });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashed = await bcrypt.hash(password, salt);
+    const hashed = await bcrypt.hash(password, 10);
 
     const newUser = new LoginCredentials({
       fullName,
@@ -46,16 +34,14 @@ export const createCredentials = async (req, res) => {
 
     await newUser.save();
 
-    const payload = { id: newUser._id, email: newUser.email };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: JWT_EXPIRES_IN,
-    });
+    // Generate token using external helper
+    const token = generateToken({ id: newUser._id, email: newUser.email });
 
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      maxAge: parseCookieMaxAge(JWT_EXPIRES_IN),
+      maxAge: COOKIE_MAX_AGE,
     });
 
     res.status(201).json({
@@ -82,30 +68,21 @@ export const getLoginCredentials = async (req, res) => {
     const user = await LoginCredentials.findOne({ email });
     if (!user) return res.status(400).json({ message: "User not found" });
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid)
-      return res.status(400).json({ message: "Invalid credentials" });
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) return res.status(400).json({ message: "Invalid credentials" });
 
-    const payload = { id: user._id, email: user.email };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: JWT_EXPIRES_IN,
-    });
+    const token = generateToken({ id: user._id, email: user.email });
 
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      maxAge: parseCookieMaxAge(JWT_EXPIRES_IN),
+      maxAge: COOKIE_MAX_AGE,
     });
 
     res.status(200).json({
       message: "Login successful",
-      user: {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        avatar: user.avatar,
-      },
+      token,
     });
   } catch (err) {
     console.error("Login error:", err);
@@ -131,13 +108,32 @@ export const getCurrentUser = async (req, res) => {
   try {
     if (!req.user)
       return res.status(401).json({ message: "Not authenticated" });
+
     const user = await LoginCredentials.findById(req.user.id).select(
       "-password"
     );
     if (!user) return res.status(404).json({ message: "User not found" });
+
     res.json({ user });
   } catch (err) {
     console.error("Get current user error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const searchUsersByEmail = async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    if (!q || q.trim() === "") return res.json([]);
+
+    const users = await LoginCredentials.find({
+      email: { $regex: q, $options: "i" },
+    }).select("-password");
+
+    res.json(users);
+  } catch (error) {
+    console.error("Search email error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };

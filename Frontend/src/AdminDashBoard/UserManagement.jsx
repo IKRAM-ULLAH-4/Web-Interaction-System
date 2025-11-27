@@ -1,52 +1,101 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useForm, useFormState } from "react-hook-form";
-import { email, z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { addUser, searchUsersByEmail, deleteUserByEmail } from "../Service/api";
 
+// Validation Schema
 const schema = z.object({
-  username: z
+  fullName: z
     .string()
-    .min(6, { message: "Kindly Enter a Valid Username" })
-    .regex(/^@/, { message: "Username must start with @" }),
-  email: z.string().email({ message: "Enter a Valid Email Address" }),
+    .min(4, { message: "Full name must be at least 4 characters" }),
+  email: z.string().email({ message: "Enter a valid email address" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be 6 characters minimum" }),
 });
-const handleChage = () => {};
+
 function UserManagement() {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteEmail, setDeleteEmail] = useState("");
+  const [message, setMessage] = useState("");
+
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data) => {
-    console.log(data.username);
+  // CREATE USER
+  const onSubmit = async (data) => {
+    try {
+      await addUser(data);
+      alert("User created successfully!");
+      reset();
+    } catch (err) {
+      alert(err.message || "Failed to create user");
+    }
   };
+
+  // OPEN DELETE MODAL
+  const openDeleteModal = () => {
+    setDeleteEmail("");
+    setMessage("");
+    setShowDeleteModal(true);
+  };
+
+  // CLOSE DELETE MODAL
+  const closeDeleteModal = () => setShowDeleteModal(false);
+
+  // HANDLE DELETE USER
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    if (!deleteEmail) return setMessage("Please enter an email.");
+
+    try {
+      const users = await searchUsersByEmail(deleteEmail);
+      console.log(users.length);
+      if (users.length === 0) {
+        setMessage("User nshta");
+        return;
+      }
+
+      // Use new API method
+      await deleteUserByEmail(deleteEmail);
+      setMessage(`User ${users[0].fullName} deleted successfully!`);
+      setDeleteEmail(""); // clear input after delete
+    } catch (err) {
+      setMessage(err.message || "Failed to delete user");
+    }
+  };
+
   return (
     <div className="container">
       <h2 className="fw-semibold mb-1">User Management</h2>
-      <p>Create Or Update User Accounts</p>
+      <p>Create or update user accounts</p>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="row g-3">
+          {/* Full Name */}
           <div className="col-md-6">
-            <label htmlFor="username" className="form-label fw-medium">
-              Username
+            <label htmlFor="fullName" className="form-label fw-medium">
+              Full Name
             </label>
             <input
               className="form-control"
-              type="text"
-              {...register("username")}
-              name="username"
-              id="username"
-              placeholder="@Username"
-              // onChange={handleChage}
+              {...register("fullName")}
+              id="fullName"
+              placeholder="Full Name"
             />
-            {errors.username && (
-              <small className="text-danger">{errors.username.message}</small>
+            {errors.fullName && (
+              <small className="text-danger">{errors.fullName.message}</small>
             )}
           </div>
+
+          {/* Email */}
           <div className="col-md-6">
             <label htmlFor="email" className="form-label fw-medium">
               Email
@@ -54,126 +103,109 @@ function UserManagement() {
             <input
               className="form-control"
               {...register("email")}
-              type="email"
-              name="email"
               id="email"
-              placeholder="User@gmail.com"
-              // onChange={handleChage}
+              placeholder="user@gmail.com"
             />
             {errors.email && (
               <small className="text-danger">{errors.email.message}</small>
             )}
           </div>
 
+          {/* Password */}
           <div className="col-md-6">
-            <label htmlFor="name" className="form-label fw-medium">
-              Full Name
-            </label>
-            <input
-              className="form-control"
-              type="text"
-              name="Full Name"
-              id="name"
-              placeholder="Full Name"
-              // onChange={handleChage}
-            />
-          </div>
-          <div className="col-md-6 ">
-            <label className="form-label fw-medium" htmlFor="password">
+            <label htmlFor="password" className="form-label fw-medium">
               Password
             </label>
             <input
               className="form-control"
+              {...register("password")}
               type="password"
-              name="Password"
               id="password"
-              // onChange={handleChage}
             />
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="Role" className="form-label fw-medium">
-              Role
-            </label>
-            <select
-              name="Role"
-              id="Role"
-              className="form-control"
-              // onChange={handleChage}
-            >
-              <option value="admin">Admin</option>
-              <option value="User">User</option>
-              <option value="Moderator">Moderator</option>
-            </select>
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="status" className="form-label fw-medium">
-              Account Status
-            </label>
-            <select
-              name="Account Status"
-              id="status"
-              className="form-control"
-              // onChange={handleChage}
-            >
-              <option value="">Active</option>
-              <option value="">Suspended</option>
-              <option value="">Disabled</option>
-            </select>
-          </div>
-          <div className="col-md-6">
-            <label htmlFor="channels" className="form-label fw-medium">
-              Max Channels
-            </label>
-            <input
-              type="number"
-              name="Number To Join"
-              id="channel"
-              // onChange={handleChage}
-              className="form-control"
-            />
-            <p className="text-muted">Maximum Channels User can join</p>
+            {errors.password && (
+              <small className="text-danger">{errors.password.message}</small>
+            )}
           </div>
 
-          <div className="col-md-6 border rounded p-3 ">
-            <div className="d-flex justify-content-between py-0 px jalign-items-center mb-1">
-              <label
-                htmlFor="emailVerified"
-                className="form-check-label me-2 mb-0"
-              >
-                Email Verified
-              </label>
-              <div className="form-check form-switch m-0">
-                <input
-                  name="Email Verified"
-                  type="checkbox"
-                  className="form-check-input"
-                  id="emailVerified"
-                  style={{ width: "2.5rem", height: "1.25rem" }}
-                  // onChange={handleChage}
-                />
-              </div>
-            </div>
-
-            <small className="text-muted d-block">
-              User Email Verification Status
-            </small>
-          </div>
-
-          <div className="d-flex gap-3">
-            <button
-              type="submit"
-              className="btn btn-primary"
-              // onClick={handleClick}
-            >
+          {/* Buttons */}
+          <div className="d-flex gap-3 mt-3">
+            <button type="submit" className="btn btn-primary">
               Create User
             </button>
-            <button type="button" className="btn btn-outline-secondary">
+            <button
+              type="button"
+              className="btn btn-danger"
+              onClick={openDeleteModal}
+            >
+              Kick User
+            </button>
+            <button
+              type="reset"
+              className="btn btn-outline-secondary"
+              onClick={() => reset()}
+            >
               Reset
             </button>
           </div>
         </div>
       </form>
+
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <div
+          className="modal-backdrop"
+          style={{
+            padding: "2rem",
+            background: "#00000080",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <div
+            className="modal-content"
+            style={{
+              background: "#fff",
+              padding: "2rem",
+              maxWidth: "500px",
+              margin: "auto",
+              borderRadius: "8px",
+            }}
+          >
+            <h5>Delete User</h5>
+            <form onSubmit={handleDelete}>
+              <div className="mb-3">
+                <label className="form-label">Enter Email:</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  value={deleteEmail}
+                  onChange={(e) => setDeleteEmail(e.target.value)}
+                  placeholder="user@gmail.com"
+                  required
+                />
+              </div>
+              {message && <p className="text-danger">{message}</p>}
+              <div className="d-flex gap-2 justify-content-end">
+                <button type="submit" className="btn btn-danger">
+                  Delete
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={closeDeleteModal}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
 export default UserManagement;

@@ -1,134 +1,112 @@
 import axios from "axios";
 
-// const baseURL = "https://backend-ezzm.onrender.com/api";
-const baseURL = "http://localhost:5000/api"
+const baseURL = "http://localhost:5000/api";
 
 const instance = axios.create({
   baseURL,
   withCredentials: true,
 });
 
+// Add admin token on all admin requests
+instance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("adminToken");
+  if (token) {
+    config.headers["x-admin-token"] = token;
+  }
+  return config;
+});
+
 export default instance;
 
-// Auth & users
+// -------- AUTH ----------
 export const addUser = async (userInfo) => {
-  const response = await instance.post("/register", userInfo);
-  return response.data;
+  const res = await instance.post("/register", userInfo);
+  return res.data;
 };
 
 export const loginUser = async (userData) => {
-  try {
-    const response = await instance.post("/login", userData);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Dlta  error" };
-  }
+  const res = await instance.post("/login", userData);
+  return res.data;
 };
 
 export const logoutUser = async () => {
-  try {
-    const response = await instance.post("/logout");
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Server error" };
-  }
+  const res = await instance.post("/logout");
+  return res.data;
 };
 
 export const getCurrentUser = async () => {
+  const res = await instance.get("/me");
+  return res.data;
+};
+
+// -------- CHAT / USERS ----------
+export const getAllUsersForChat = async () => {
   try {
-    const response = await instance.get("/me");
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Not authenticated" };
+    const res = await instance.get("/user"); // axios instead of fetch
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    throw err.response?.data || { message: "Failed to fetch users" };
   }
 };
 
-export const getUsers = async () => {
-  try {
-    const response = await instance.get("/u");
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to fetch users" };
-  }
+// -------- ADMIN  ----------
+
+export const deleteUserByEmail = async (email) => {
+  const res = await instance.delete(`/admin/users?email=${email}`);
+  return res.data;
 };
 
-// Profile: update profile (multipart FormData)
+// -------- SEARCH USERS ----------
+export const searchUsersByEmail = async (query) => {
+  const res = await instance.get(`/search-users?q=${query}`);
+  return res.data;
+};
+
+// -------- PROFILE ----------
 export const updateProfile = async ({ fullName, avatarFile }) => {
-  try {
-    const form = new FormData();
-    if (fullName) form.append("fullName", fullName);
-    if (avatarFile) form.append("avatar", avatarFile);
-    const response = await instance.put("/profile", form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to update profile" };
-  }
+  const form = new FormData();
+  if (fullName) form.append("fullName", fullName);
+  if (avatarFile) form.append("avatar", avatarFile);
+
+  const res = await instance.put("/profile", form);
+  return res.data;
 };
 
-// Messages API
+// -------- MESSAGES ----------
 export const getConversation = async (otherUserId) => {
-  try {
-    const response = await instance.get(`/messages/${otherUserId}`);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to fetch conversation" };
-  }
+  const res = await instance.get(`/messages/${otherUserId}`);
+  return res.data;
 };
 
 export const sendMessage = async ({ to, text }) => {
-  try {
-    const response = await instance.post("/messages", { to, text });
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to send message" };
-  }
+  const res = await instance.post("/messages", { to, text });
+  return res.data;
 };
 
 export const editMessage = async (id, text) => {
-  try {
-    const response = await instance.put(`/messages/${id}`, { text });
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to edit message" };
-  }
+  const res = await instance.put(`/messages/${id}`, { text });
+  return res.data;
 };
 
 export const removeMessage = async (id) => {
-  try {
-    const response = await instance.delete(`/messages/${id}`);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to delete message" };
-  }
+  const res = await instance.delete(`/messages/${id}`);
+  return res.data;
 };
 
-// Other endpoints (features/steps)
+// -------- FEATURES & STEPS ----------
 export const getFeatures = async () => {
-  try {
-    const response = await instance.get("/features");
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Server error" };
-  }
+  const res = await instance.get("/features");
+  return res.data;
 };
 
 export const getSteps = async () => {
-  try {
-    const response = await instance.get("/steps");
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to fetch steps" };
-  }
+  const res = await instance.get("/steps");
+  return res.data;
 };
 
-// Stripe: Create checkout session (ADDED)
+// -------- STRIPE ----------
 export const createCheckoutSession = async () => {
-  try {
-    const response = await instance.post("/create-checkout-session");
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || { message: "Failed to start payment" };
-  }
+  const res = await instance.post("/create-checkout-session");
+  return res.data;
 };

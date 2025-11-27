@@ -1,5 +1,27 @@
 import LoginCredentials from "../models/LoginCredentials.js";
+import User from "../models/user.model.js";
 
+export const deleteUser = async (req, res) => {
+  try {
+    console.log("Delete route hits");
+
+    const { email } = req.query;
+    if (!email) return res.status(400).json({ message: "Email is required" });
+
+    const deletedUser = await LoginCredentials.findOneAndDelete({
+      email: { $regex: `^${email.trim()}$`, $options: "i" },
+    });
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User not found from backend" });
+    }
+
+    res.json({ message: `User ${deletedUser.fullName} deleted successfully` });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error deleting user" });
+  }
+};
 /**
  * Make avatar value a full absolute URL if it looks like a relative path.
  * Uses req to build host: protocol + host header.
@@ -11,7 +33,9 @@ function makeAvatarAbsolute(req, avatarPath) {
   // ensure we have protocol + host
   const host = req.get("host");
   const protocol = req.protocol;
-  return `${protocol}://${host}${avatarPath.startsWith("/") ? avatarPath : `/${avatarPath}`}`;
+  return `${protocol}://${host}${
+    avatarPath.startsWith("/") ? avatarPath : `/${avatarPath}`
+  }`;
 }
 
 /**
@@ -19,7 +43,11 @@ function makeAvatarAbsolute(req, avatarPath) {
  */
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await LoginCredentials.find().select("_id fullName email avatar createdAt").sort({ fullName: 1 });
+    // console.log("this routes hits");
+
+    const users = await LoginCredentials.find()
+      .select("_id fullName email avatar createdAt")
+      .sort({ fullName: 1 });
     // normalize avatars to absolute URLs using request host
     const mapped = users.map((u) => ({
       _id: u._id,
@@ -31,7 +59,10 @@ export const getAllUsers = async (req, res) => {
     res.json(mapped);
   } catch (err) {
     console.error("getAllUsers error:", err);
-    res.status(500).json({ message: "Server error while fetching users", error: err.message });
+    res.status(500).json({
+      message: "Server error while fetching users",
+      error: err.message,
+    });
   }
 };
 
@@ -41,6 +72,8 @@ export const getAllUsers = async (req, res) => {
  */
 export const updateProfile = async (req, res) => {
   try {
+    console.log(req.file);
+
     const userId = req.user?.id;
     if (!userId) return res.status(401).json({ message: "Not authenticated" });
 
@@ -53,7 +86,9 @@ export const updateProfile = async (req, res) => {
       updates.avatar = relativePath;
     }
 
-    const user = await LoginCredentials.findByIdAndUpdate(userId, updates, { new: true }).select("-password");
+    const user = await LoginCredentials.findByIdAndUpdate(userId, updates, {
+      new: true,
+    }).select("-password");
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Return absolute avatar URL
@@ -65,6 +100,10 @@ export const updateProfile = async (req, res) => {
     res.json({ user: returnedUser, message: "Profile updated" });
   } catch (err) {
     console.error("updateProfile error:", err);
-    res.status(500).json({ message: "Server error updating profile", error: err.message });
+    res
+      .status(500)
+      .json({ message: "Server error updating profile", error: err.message });
   }
 };
+
+

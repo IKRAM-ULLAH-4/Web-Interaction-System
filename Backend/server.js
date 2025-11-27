@@ -4,10 +4,10 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import apiRoutes from "./routes/index.js";
-import Stripe from "stripe";
 import { handleWebhook } from "./controllers/Stripe.controller.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import userRoute from './routes/UserRoute.js'
 
 dotenv.config();
 
@@ -33,13 +33,14 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: process.env.CLIENT_ORIGIN ,
+    origin: process.env.CLIENT_ORIGIN,
     credentials: true,
   })
 );
 
 // Mount all API routes under /api
 app.use("/api", apiRoutes);
+app.use("/api" , userRoute);
 
 // Error handler (catch all)
 app.use((err, req, res, next) => {

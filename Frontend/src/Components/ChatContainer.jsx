@@ -99,7 +99,8 @@ function ChatContainer({ selectedContact, currentUser, onBack }) {
   };
 
   const handleDelete = async (msgId) => {
-    if (!window.confirm("Delete this message?")) return;
+    if (!window.confirm("Delete this message?")) 
+      return;
     try {
       await removeMessage(msgId);
       setMessages((m) => m.filter((msg) => msg._id !== msgId));

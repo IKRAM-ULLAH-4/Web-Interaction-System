@@ -77,7 +77,7 @@ export const handleWebhook = async (req, res) => {
       premiumExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
     });
 
-    console.log("🎉 Premium activated for user:", userId);
+    console.log("Congrats Premium activated for user:", userId);
   }
 
   res.json({ received: true });

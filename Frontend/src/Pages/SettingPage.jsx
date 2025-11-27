@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { logoutUser, getCurrentUser, updateProfile } from "../Service/api";
 import UpgradeButton from "../Components/UpgradeButton";
-import { Link } from "react-router-dom";
 
 const MAX_DISPLAY_NAME_CHARS = 20;
 const MAX_BIO_CHARS = 100;
@@ -12,46 +11,66 @@ export default function SettingsPage() {
   const location = useLocation();
   const passedUser = location.state?.user;
 
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [loadingLogout, setLoadingLogout] = useState(false);
+
   const [user, setUser] = useState({
     id: null,
-    fullName: "Nothing ",
-    name: "Newone",
-    email: "guest@gmail.com",
-    avatar: "/uploads/Ikram.jpeg",
-    username: "NewOne",
-    bio: "Coffee enthusiast ☕ | Tech lover ",
+    fullName: "",
+    name: "",
+    email: "",
+    avatar: "/uploads/Ikram.jpg",
+    username: "",
+    bio: "",
     status: "Available",
-    ...passedUser,
   });
 
-  const [displayName, setDisplayName] = useState(user.fullName);
-  const [username, setUsername] = useState(user.username);
-  const [bio, setBio] = useState(user.bio);
-  const [status, setStatus] = useState(user.status);
+  const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
+  const [bio, setBio] = useState("");
+  const [status, setStatus] = useState("Available");
 
   const [editingDisplayName, setEditingDisplayName] = useState(false);
   const [savingDisplayName, setSavingDisplayName] = useState(false);
   const [savingUsername, setSavingUsername] = useState(false);
   const [savingAll, setSavingAll] = useState(false);
-  const [loadingUser, setLoadingUser] = useState(!passedUser);
-  const [loadingLogout, setLoadingLogout] = useState(false);
-
   const [activeTab, setActiveTab] = useState("profile");
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (passedUser) return;
+      if (passedUser) {
+        const u = passedUser;
+        const avatarUrl = u.avatar || u.profileImage || "/uploads/Ikram.jpg";
+
+        setUser({
+          id: u.id || u._id || null,
+          fullName: u.fullName || u.name || "New User",
+          name: u.name || u.fullName || "New User",
+          email: u.email || "guest@gmail.com",
+          avatar: avatarUrl,
+          username: u.username || "NewOne",
+          bio: u.bio || "",
+          status: u.status || "Available",
+        });
+        setDisplayName(u.fullName || u.name || "");
+        setUsername(u.username || "");
+        setBio(u.bio || "");
+        setStatus(u.status || "Available");
+        setLoadingUser(false);
+        return;
+      }
+
       try {
-        setLoadingUser(true);
         const me = await getCurrentUser();
         if (me?.user) {
           const u = me.user;
+          const avatarUrl = u.avatar || "/uploads/defaul.jpeg";
           setUser({
             id: u._id,
             fullName: u.fullName || u.name,
-            name: u.fullName || u.name,
+            name: u.name || u.fullName,
             email: u.email,
-            avatar: u.avatar || "/uploads/defaul.jpeg",
+            avatar: avatarUrl,
             username: u.username || "user",
             bio: u.bio || "",
             status: u.status || "Available",
@@ -67,9 +86,11 @@ export default function SettingsPage() {
         setLoadingUser(false);
       }
     };
+
     fetchUser();
   }, [passedUser]);
 
+  // --- Handlers (Display Name, Username, All, Logout) ---
   const handleSaveDisplayName = async () => {
     if (!user.id || displayName.trim() === "" || displayName === user.fullName)
       return;
@@ -166,7 +187,7 @@ export default function SettingsPage() {
         className="card shadow-sm rounded-4 p-0 overflow-hidden"
         style={{ width: "620px" }}
       >
-        {/* Sleek Top Tabs */}
+        {/* Tabs */}
         <div className="d-flex justify-content-between bg-white px-4 pt-3 border-bottom">
           {["profile", "premium", "account"].map((tab) => (
             <button
@@ -183,9 +204,7 @@ export default function SettingsPage() {
               }}
               onClick={() => setActiveTab(tab)}
             >
-              {tab === "profile" && "Profile"}
-              {tab === "premium" && "Premium"}
-              {tab === "account" && "Account"}
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
@@ -193,11 +212,11 @@ export default function SettingsPage() {
         {/* Tab Content */}
         <div className="tab-content p-4">
           {activeTab === "profile" && (
-            <div>
+            <>
               {/* Profile Photo */}
               <div className="d-flex align-items-center mb-4">
                 <img
-                  src={user.avatar}
+                  src={user.avatar || "/default-avatar.png"}
                   alt="Profile"
                   className="rounded-circle border me-4"
                   style={{ width: 90, height: 90, objectFit: "cover" }}
@@ -273,15 +292,10 @@ export default function SettingsPage() {
               <div className="mb-4">
                 <label className="form-label fw-bold">Username</label>
                 <div className="input-group">
-                  <span className="input-group-text">@</span>
                   <input
                     className="form-control"
                     value={username}
-                    onChange={(e) =>
-                      setUsername(
-                        e.target.value.toLowerCase().replace(/\s/g, "")
-                      )
-                    }
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                   <button
                     className="btn btn-primary"
@@ -292,14 +306,37 @@ export default function SettingsPage() {
                   </button>
                 </div>
               </div>
-            </div>
+
+              {/* Email */}
+              <div className="mb-4">
+                <label className="form-label fw-bold">Email</label>
+                <input className="form-control" value={user.email} readOnly />
+              </div>
+
+              {/* Bio */}
+              <div className="mb-4">
+                <label className="form-label fw-bold">Bio</label>
+                <textarea
+                  className="form-control"
+                  value={bio}
+                  onChange={(e) => setBio(e.target.value)}
+                  maxLength={MAX_BIO_CHARS}
+                />
+              </div>
+
+              {/* Status */}
+              <div className="mb-4">
+                <label className="form-label fw-bold">Status</label>
+                <input
+                  className="form-control"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                />
+              </div>
+            </>
           )}
 
-          {activeTab === "premium" && (
-            <div>
-              <UpgradeButton />
-            </div>
-          )}
+          {activeTab === "premium" && <UpgradeButton />}
           {activeTab === "account" && <div>... Account settings ...</div>}
         </div>
 
