@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
 const API_URL = "http://localhost:5000/api/steps";
 
@@ -15,15 +16,25 @@ export default function AdminSteps() {
     description: "",
   });
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(""); // user-friendly messages
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("adminToken");
 
+  // Redirect if no token
+  useEffect(() => {
+    if (!token) navigate("/admin-login");
+  }, [token, navigate]);
+
   const fetchSteps = async () => {
     try {
-      const res = await axios.get(API_URL);
+      const res = await axios.get(API_URL, {
+        headers: { "x-admin-token": token },
+      });
       setSteps(res.data);
     } catch (err) {
       console.error("Error fetching steps:", err);
+      setMessage("Failed to fetch steps");
     }
   };
 
@@ -38,6 +49,7 @@ export default function AdminSteps() {
     setEditing(false);
     setForm({ number: "", color: "", title: "", description: "" });
     setShowModal(true);
+    setMessage("");
   };
 
   const openEditModal = (step) => {
@@ -45,27 +57,29 @@ export default function AdminSteps() {
     setCurrentId(step._id);
     setForm({ ...step });
     setShowModal(true);
+    setMessage("");
   };
 
   const saveStep = async () => {
     setLoading(true);
-    try {
-      if (!form.number || !form.title) {
-        alert("Number and Title are required!");
-        setLoading(false);
-        return;
-      }
+    if (!form.number || !form.title) {
+      alert("Number and Title are required!");
+      setLoading(false);
+      return;
+    }
 
+    try {
       if (editing) {
         await axios.put(`${API_URL}/${currentId}`, form, {
           headers: { "x-admin-token": token },
         });
+        setMessage("Step updated successfully!");
       } else {
         await axios.post(API_URL, form, {
           headers: { "x-admin-token": token },
         });
+        setMessage("Step created successfully!");
       }
-
       setShowModal(false);
       fetchSteps();
     } catch (err) {
@@ -82,6 +96,7 @@ export default function AdminSteps() {
       await axios.delete(`${API_URL}/${id}`, {
         headers: { "x-admin-token": token },
       });
+      setMessage("Step deleted successfully!");
       fetchSteps();
     } catch (err) {
       console.error("Error deleting step:", err);
@@ -91,50 +106,62 @@ export default function AdminSteps() {
 
   return (
     <div className="container py-4">
-      <h2 className="fw-bold">Admin: Manage Steps</h2>
+      <div className="d-flex justify-content-end mb-4">
+        <Link to="/admin-menu" className="btn btn-outline-secondary">
+          {" "}
+          Back
+        </Link>
+      </div>
+      <h2 className="fw-bold">Admin: Manage Steps For Landing Page</h2>
+      {message && <div className="alert alert-info">{message}</div>}
       <button className="btn btn-primary my-3" onClick={openCreateModal}>
         + Add Step
       </button>
 
-      <table className="table table-bordered">
-        <thead>
-          <tr>
-            <th>No</th>
-            <th>Title</th>
-            <th>Color</th>
-            <th>Description</th>
-            <th style={{ width: "160px" }}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {steps.map((step) => (
-            <tr key={step._id}>
-              <td>{step.number}</td>
-              <td>{step.title}</td>
-              <td>{step.color}</td>
-              <td>{step.description}</td>
-              <td>
-                <button
-                  className="btn btn-warning btn-sm me-2"
-                  onClick={() => openEditModal(step)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn btn-danger btn-sm"
-                  onClick={() => deleteStep(step._id)}
-                >
-                  Delete
-                </button>
-              </td>
+      {steps.length === 0 ? (
+        <p>No steps created yet.</p>
+      ) : (
+        <table className="table table-bordered">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Title</th>
+              <th>Color</th>
+              <th>Description</th>
+              <th style={{ width: "160px" }}>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {steps.map((step) => (
+              <tr key={step._id}>
+                <td>{step.number}</td>
+                <td>{step.title}</td>
+                <td>{step.color}</td>
+                <td>{step.description}</td>
+                <td>
+                  <button
+                    className="btn btn-warning btn-sm me-2"
+                    onClick={() => openEditModal(step)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => deleteStep(step._id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
-      {/* React Modal */}
+      {/* Modal */}
       {showModal && (
         <div
+          onClick={() => setShowModal(false)}
           style={{
             position: "fixed",
             top: 0,
@@ -149,6 +176,7 @@ export default function AdminSteps() {
           }}
         >
           <div
+            onClick={(e) => e.stopPropagation()}
             style={{
               background: "#fff",
               padding: "20px",
@@ -203,7 +231,13 @@ export default function AdminSteps() {
                 onClick={saveStep}
                 disabled={loading}
               >
-                {editing ? "Update" : "Create"}
+                {loading
+                  ? editing
+                    ? "Updating..."
+                    : "Creating..."
+                  : editing
+                  ? "Update"
+                  : "Create"}
               </button>
             </div>
           </div>

@@ -19,6 +19,7 @@ function UserManagement() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteEmail, setDeleteEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // "error" or "success"
 
   const {
     register,
@@ -32,7 +33,7 @@ function UserManagement() {
   // CREATE USER
   const onSubmit = async (data) => {
     try {
-      await addUser(data);
+     const res =  await addUser(data);
       alert("User created successfully!");
       reset();
     } catch (err) {
@@ -44,6 +45,7 @@ function UserManagement() {
   const openDeleteModal = () => {
     setDeleteEmail("");
     setMessage("");
+    setMessageType("");
     setShowDeleteModal(true);
   };
 
@@ -53,41 +55,49 @@ function UserManagement() {
   // HANDLE DELETE USER
   const handleDelete = async (e) => {
     e.preventDefault();
-    if (!deleteEmail) return setMessage("Please enter an email.");
+
+    if (!deleteEmail) {
+      setMessage("Please enter an email.");
+      setMessageType("error");
+      return;
+    }
 
     try {
       const users = await searchUsersByEmail(deleteEmail);
-      console.log(users.length);
+
       if (users.length === 0) {
         setMessage("User nshta");
+        setMessageType("error");
         return;
       }
 
-      // Use new API method
       await deleteUserByEmail(deleteEmail);
-      setMessage(`User ${users[0].fullName} deleted successfully!`);
-      setDeleteEmail(""); // clear input after delete
+      setMessage(`User "${users[0].fullName}" deleted successfully!`);
+      setMessageType("success");
+      setDeleteEmail("");
     } catch (err) {
       setMessage(err.message || "Failed to delete user");
+      setMessageType("error");
     }
   };
 
   return (
     <div className="container">
       <h2 className="fw-semibold mb-1">User Management</h2>
-      <p>Create or update user accounts</p>
+      <p className="text-muted">Create or remove user accounts</p>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      {/* CREATE USER FORM */}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="card p-4 shadow-sm mb-4"
+      >
         <div className="row g-3">
           {/* Full Name */}
           <div className="col-md-6">
-            <label htmlFor="fullName" className="form-label fw-medium">
-              Full Name
-            </label>
+            <label className="form-label fw-medium">Full Name</label>
             <input
               className="form-control"
               {...register("fullName")}
-              id="fullName"
               placeholder="Full Name"
             />
             {errors.fullName && (
@@ -97,13 +107,10 @@ function UserManagement() {
 
           {/* Email */}
           <div className="col-md-6">
-            <label htmlFor="email" className="form-label fw-medium">
-              Email
-            </label>
+            <label className="form-label fw-medium">Email</label>
             <input
               className="form-control"
               {...register("email")}
-              id="email"
               placeholder="user@gmail.com"
             />
             {errors.email && (
@@ -113,14 +120,11 @@ function UserManagement() {
 
           {/* Password */}
           <div className="col-md-6">
-            <label htmlFor="password" className="form-label fw-medium">
-              Password
-            </label>
+            <label className="form-label fw-medium">Password</label>
             <input
               className="form-control"
-              {...register("password")}
               type="password"
-              id="password"
+              {...register("password")}
             />
             {errors.password && (
               <small className="text-danger">{errors.password.message}</small>
@@ -129,9 +133,8 @@ function UserManagement() {
 
           {/* Buttons */}
           <div className="d-flex gap-3 mt-3">
-            <button type="submit" className="btn btn-primary">
-              Create User
-            </button>
+            <button className="btn btn-primary">Create User</button>
+
             <button
               type="button"
               className="btn btn-danger"
@@ -139,6 +142,7 @@ function UserManagement() {
             >
               Kick User
             </button>
+
             <button
               type="reset"
               className="btn btn-outline-secondary"
@@ -150,51 +154,59 @@ function UserManagement() {
         </div>
       </form>
 
-      {/* Delete Modal */}
+      {/* DELETE CONFIRMATION MODAL */}
       {showDeleteModal && (
         <div
           className="modal-backdrop"
           style={{
-            padding: "2rem",
             background: "#00000080",
             position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 999,
           }}
         >
           <div
-            className="modal-content"
-            style={{
-              background: "#fff",
-              padding: "2rem",
-              maxWidth: "500px",
-              margin: "auto",
-              borderRadius: "8px",
-            }}
+            className="card shadow-lg p-4"
+            style={{ width: "420px", borderRadius: "12px" }}
           >
-            <h5>Delete User</h5>
+            <h4 className="fw-bold mb-3">Delete User</h4>
+            <p className="text-muted mb-3">
+              Enter email to delete the user permanently.
+            </p>
+
             <form onSubmit={handleDelete}>
-              <div className="mb-3">
-                <label className="form-label">Enter Email:</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  value={deleteEmail}
-                  onChange={(e) => setDeleteEmail(e.target.value)}
-                  placeholder="user@gmail.com"
-                  required
-                />
-              </div>
-              {message && <p className="text-danger">{message}</p>}
-              <div className="d-flex gap-2 justify-content-end">
-                <button type="submit" className="btn btn-danger">
+              <input
+                type="email"
+                className="form-control mb-3"
+                value={deleteEmail}
+                onChange={(e) => setDeleteEmail(e.target.value)}
+                placeholder="user@gmail.com"
+                required
+              />
+
+              {/* Dynamic Message */}
+              {message && (
+                <div
+                  className={`p-2 rounded mb-3 fw-semibold ${
+                    messageType === "error"
+                      ? "bg-danger text-white"
+                      : "bg-success text-white"
+                  }`}
+                >
+                  {message}
+                </div>
+              )}
+
+              <div className="d-flex justify-content-end gap-2">
+                <button className="btn btn-danger" type="submit">
                   Delete
                 </button>
                 <button
-                  type="button"
                   className="btn btn-secondary"
+                  type="button"
                   onClick={closeDeleteModal}
                 >
                   Cancel

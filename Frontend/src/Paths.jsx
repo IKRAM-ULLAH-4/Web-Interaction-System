@@ -22,6 +22,7 @@ import PaymentSuccessPage from "./Pages/PaymentSuccesPage";
 import PaymentCancel from "./Pages/PaymentCancelPage";
 
 import AdminProtected from "./AdminDashBoard/AdminProtected";
+import AddFeature from "./AdminDashBoard/AddFeature";
 
 const router = createBrowserRouter([
   // PUBLIC ROUTES
@@ -100,7 +101,8 @@ const router = createBrowserRouter([
       </AdminProtected>
     ),
   },
-
+  
+  {path : "/add-feature"   , element: <AddFeature />} , 
   // PAYMENTS (PUBLIC)
   { path: "/premium-success", element: <PaymentSuccessPage /> },
   { path: "/premium-cancel", element: <PaymentCancel /> },

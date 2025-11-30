@@ -100,6 +100,26 @@ export const getFeatures = async () => {
   return res.data;
 };
 
+export const createFeature = async (formData) => {
+  const res = await instance.post("/features", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+};
+
+export const updateFeatureById = async (id, formData) => {
+  const res = await instance.put(`/features/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return res.data;
+};
+
+export const deleteFeatureById = async (id) => {
+  const res = await instance.delete(`/features/${id}`);
+  return res.data;
+};
+// ----------
+
 export const getSteps = async () => {
   const res = await instance.get("/steps");
   return res.data;

@@ -18,7 +18,7 @@ function ChatList({ contacts, selectedContact, onSelectContact }) {
               src={contact.avatar}
               alt={contact.name}
               className="rounded-circle me-2"
-              width="70"
+              width="60"
               height="60"
             />
             <div className="flex-grow-1">
