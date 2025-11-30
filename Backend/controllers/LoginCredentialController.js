@@ -6,7 +6,6 @@ import { generateToken } from "../utils/generateToken.js";
 import dotenv from 'dotenv'
 dotenv.config();
 
-
 const COOKIE_NAME = process.env.JWT_COOKIE_NAME;
 // console.log(COOKIE_NAME);
 
@@ -21,7 +20,7 @@ export const createCredentials = async (req, res) => {
 
     const existing = await LoginCredentials.findOne({ email });
     if (existing)
-      return res.status(400).json({ message: "Email already registered" });
+      return res.status(200).json({ message: "Email already registered" });
 
     const hashed = await bcrypt.hash(password, 10);
 
@@ -29,7 +28,7 @@ export const createCredentials = async (req, res) => {
       fullName,
       email,
       password: hashed,
-      avatar: "/uploads/Ikram.jpeg",
+      avatar: "/uploads/Default.jpg",
     });
 
     await newUser.save();

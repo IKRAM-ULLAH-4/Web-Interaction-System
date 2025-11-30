@@ -8,6 +8,7 @@ import { handleWebhook } from "./controllers/Stripe.controller.js";
 import path from "path";
 import { fileURLToPath } from "url";
 import userRoute from './routes/UserRoute.js'
+// import featureRoutes from './routes/feature.routes.js'
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ app.use(
 // Mount all API routes under /api
 app.use("/api", apiRoutes);
 app.use("/api" , userRoute);
+// app.use("/api/features", featureRoutes);
 
 // Error handler (catch all)
 app.use((err, req, res, next) => {
@@ -50,6 +52,8 @@ app.use((err, req, res, next) => {
 
 // Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
+console.log(process.env.MONGODB_URI);
+
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {

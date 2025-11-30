@@ -1,45 +1,67 @@
 import Feature from "../models/feature.model.js";
 
-// Get all features
-export const getFeatures = async (req, res) => {
+// GET ALL FEATURES
+export const getAllFeatures = async (req, res) => {
   try {
     const features = await Feature.find();
     res.json(features);
-  } catch (error) {
-    res.status(500).json({ message: "Failed to fetch features", error });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch features" });
   }
 };
 
-// // Create a new feature (Admin)
-// export const createFeature = async (req, res) => {
-//   try {
-//     const { img, title, text, link } = req.body;
-//     const newFeature = new Feature({ img, title, text, link });
-//     const savedFeature = await newFeature.save();
-//     res.status(201).json(savedFeature);
-//   } catch (error) {
-//     res.status(500).json({ message: "Failed to create feature", error });
-//   }
-// };
+// CREATE FEATURE
+export const createFeature = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Image is required" });
+    }
 
-// // Update a feature (Admin)
-// export const updateFeature = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const updatedFeature = await Feature.findByIdAndUpdate(id, req.body, { new: true });
-//     res.json(updatedFeature);
-//   } catch (error) {
-//     res.status(500).json({ message: "Failed to update feature", error });
-//   }
-// };
+    const newFeature = new Feature({
+      img: `/uploads/${req.file.filename}`,
+      title: req.body.title,
+      text: req.body.text,
+      link: req.body.link || "",
+    });
 
-// // Delete a feature (Admin)
-// export const deleteFeature = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     await Feature.findByIdAndDelete(id);
-//     res.json({ message: "Feature deleted successfully" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Failed to delete feature", error });
-//   }
-// };
+    await newFeature.save();
+    res.json(newFeature);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to create feature" });
+  }
+};
+
+// UPDATE FEATURE
+export const updateFeature = async (req, res) => {
+  try {
+    const updateData = {
+      title: req.body.title,
+      text: req.body.text,
+      link: req.body.link || "",
+    };
+
+    if (req.file) {
+      updateData.img = `/uploads/${req.file.filename}`;
+    }
+
+    const updatedFeature = await Feature.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+    );
+
+    res.json(updatedFeature);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update feature" });
+  }
+};
+
+// DELETE FEATURE
+export const deleteFeature = async (req, res) => {
+  try {
+    await Feature.findByIdAndDelete(req.params.id);
+    res.json({ message: "Feature deleted" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete feature" });
+  }
+};
