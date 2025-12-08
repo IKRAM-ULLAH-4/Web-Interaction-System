@@ -50,7 +50,7 @@ function Features() {
                 style={{ width: "18rem" }}
               >
                 <img
-                  src={`https://web-interaction-system.vercel.app${feature.img}`}
+                  src={`https://kwick-server.onrender.com${feature.img}`}
                   className="card-img-top"
                   alt={feature.title}
                 />

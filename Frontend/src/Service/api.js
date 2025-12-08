@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "https://web-interaction-system.vercel.app/api";
+const baseURL = "https://kwick-server.onrender.com/api";
 
 const instance = axios.create({
   baseURL,

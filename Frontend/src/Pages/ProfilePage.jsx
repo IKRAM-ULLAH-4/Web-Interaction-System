@@ -5,7 +5,7 @@ import { UserChatContext } from "../Context/UserChatContext";
 import defaultProfile from "../assets/logo.png";
 
 // const BACKEND_URL = "http://localhost:5000";
-const BACKEND_URL = "https://web-interaction-system.vercel.app"
+const BACKEND_URL = "https://kwick-server.onrender.com"
 
 export default function ProfilePage() {
   const { currentUser, setCurrentUser } = useContext(UserChatContext);

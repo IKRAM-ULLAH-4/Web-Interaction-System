@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const API_URL = "https://web-interaction-system.vercel.app/api/admin/login";
+const API_URL = "https://kwick-server.onrender.com/api/admin/login";
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ username: "", password: "" });

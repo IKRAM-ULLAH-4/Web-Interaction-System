@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { getCurrentUser, getAllUsersForChat } from "../Service/api";
 
-const BACKEND_URL = "https://web-interaction-system.vercel.app";
+const BACKEND_URL = "https://kwick-server.onrender.com";
 
 export const UserChatContext = createContext({
   currentUser: null,
