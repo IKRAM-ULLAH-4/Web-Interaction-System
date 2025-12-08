@@ -35,11 +35,6 @@ export const getConversation = async (req, res) => {
   }
 };
 
-/**
- * Send a message
- * POST /api/messages
- * body: { to: userId, text: string }
- */
 export const createMessage = async (req, res) => {
   try {
     const senderId = req.user?.id;
@@ -75,11 +70,7 @@ export const createMessage = async (req, res) => {
   }
 };
 
-/**
- * Edit a message (only sender can edit)
- * PUT /api/messages/:id
- * body: { text }
- */
+
 export const updateMessage = async (req, res) => {
   try {
     const me = req.user?.id;

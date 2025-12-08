@@ -23,15 +23,31 @@ import PaymentCancel from "./Pages/PaymentCancelPage";
 
 import AdminProtected from "./AdminDashBoard/AdminProtected";
 import AddFeature from "./AdminDashBoard/AddFeature";
+import { UserInforProvider } from "./Context/UserInfoContext";
+import UserChatProvider, { UserChatContext } from "./Context/UserChatContext";
 
 const router = createBrowserRouter([
   // PUBLIC ROUTES
-  { path: "/", element: <LandingPage /> },
+  { path: "/", element: 
+  <UserInforProvider>
+  <LandingPage /> 
+  </UserInforProvider>},
   { path: "/register", element: <RegistrationPage /> },
   { path: "/login", element: <LoginPage /> },
-  { path: "/homepage", element: <ChatApp /> },
-  { path: "/profile", element: <ProfilePage /> },
-  { path: "/user/settings", element: <SettingsPage /> },
+  { path: "/homepage", element: 
+  <UserChatProvider >
+    <ChatApp /> 
+  </UserChatProvider> } , 
+  { path: "/profile", element: 
+  <UserChatProvider>
+
+ 
+  <ProfilePage />
+   </UserChatProvider> },
+  { path: "/user/settings", element: 
+  <UserChatProvider >
+  <SettingsPage />
+    </UserChatProvider>},
 
   // Admin Login (public)
   { path: "/admin", element: <AdminLogin /> },

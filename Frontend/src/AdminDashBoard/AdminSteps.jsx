@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
-const API_URL = "http://localhost:5000/api/steps";
+const API_URL = "https://web-interaction-system.vercel.app/api/steps";
 
 export default function AdminSteps() {
   const [steps, setSteps] = useState([]);
@@ -16,12 +16,20 @@ export default function AdminSteps() {
     description: "",
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(""); // user-friendly messages
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
   const token = localStorage.getItem("adminToken");
 
-  // Redirect if no token
+  // Color combinations EXACTLY how the DB expects them
+  const colorOptions = [
+    { label: "Primary (White Text)", value: "bg-primary text-white" },
+    { label: "Success (White Text)", value: "bg-success text-white" },
+    { label: "Warning (Dark Text)", value: "bg-warning text-dark" },
+    { label: "Danger (White Text)", value: "bg-danger text-white" },
+    { label: "Info (Dark Text)", value: "bg-info text-dark" }
+  ];
+
   useEffect(() => {
     if (!token) navigate("/admin-login");
   }, [token, navigate]);
@@ -29,7 +37,7 @@ export default function AdminSteps() {
   const fetchSteps = async () => {
     try {
       const res = await axios.get(API_URL, {
-        headers: { "x-admin-token": token },
+        headers: { "x-admin-token": token }
       });
       setSteps(res.data);
     } catch (err) {
@@ -47,7 +55,12 @@ export default function AdminSteps() {
 
   const openCreateModal = () => {
     setEditing(false);
-    setForm({ number: "", color: "", title: "", description: "" });
+    setForm({
+      number: "",
+      color: colorOptions[0].value,
+      title: "",
+      description: ""
+    });
     setShowModal(true);
     setMessage("");
   };
@@ -71,12 +84,12 @@ export default function AdminSteps() {
     try {
       if (editing) {
         await axios.put(`${API_URL}/${currentId}`, form, {
-          headers: { "x-admin-token": token },
+          headers: { "x-admin-token": token }
         });
         setMessage("Step updated successfully!");
       } else {
         await axios.post(API_URL, form, {
-          headers: { "x-admin-token": token },
+          headers: { "x-admin-token": token }
         });
         setMessage("Step created successfully!");
       }
@@ -94,7 +107,7 @@ export default function AdminSteps() {
     if (!window.confirm("Are you sure you want to delete this step?")) return;
     try {
       await axios.delete(`${API_URL}/${id}`, {
-        headers: { "x-admin-token": token },
+        headers: { "x-admin-token": token }
       });
       setMessage("Step deleted successfully!");
       fetchSteps();
@@ -106,14 +119,17 @@ export default function AdminSteps() {
 
   return (
     <div className="container py-4">
+
       <div className="d-flex justify-content-end mb-4">
         <Link to="/admin-menu" className="btn btn-outline-secondary">
-          {" "}
           Back
         </Link>
       </div>
+
       <h2 className="fw-bold">Admin: Manage Steps For Landing Page</h2>
+
       {message && <div className="alert alert-info">{message}</div>}
+
       <button className="btn btn-primary my-3" onClick={openCreateModal}>
         + Add Step
       </button>
@@ -136,7 +152,12 @@ export default function AdminSteps() {
               <tr key={step._id}>
                 <td>{step.number}</td>
                 <td>{step.title}</td>
-                <td>{step.color}</td>
+                <td>
+                  {/* Shows the exact DB stored class */}
+                  <span className={`badge ${step.color} p-2`}>
+                    {step.color}
+                  </span>
+                </td>
                 <td>{step.description}</td>
                 <td>
                   <button
@@ -158,7 +179,6 @@ export default function AdminSteps() {
         </table>
       )}
 
-      {/* Modal */}
       {showModal && (
         <div
           onClick={() => setShowModal(false)}
@@ -172,7 +192,7 @@ export default function AdminSteps() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            zIndex: 1050,
+            zIndex: 1050
           }}
         >
           <div
@@ -183,7 +203,7 @@ export default function AdminSteps() {
               borderRadius: "8px",
               width: "500px",
               maxHeight: "90vh",
-              overflowY: "auto",
+              overflowY: "auto"
             }}
           >
             <h5>{editing ? "Edit Step" : "Create Step"}</h5>
@@ -196,13 +216,29 @@ export default function AdminSteps() {
               className="form-control mb-2"
               placeholder="Step Number"
             />
-            <input
+
+            {/* COLOR DROPDOWN */}
+            <label className="fw-bold">Choose Color</label>
+            <select
               name="color"
               value={form.color}
               onChange={handleChange}
               className="form-control mb-2"
-              placeholder="Color"
-            />
+            >
+              {colorOptions.map((c) => (
+                <option key={c.value} value={c.value}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+
+            {/* PREVIEW */}
+            <div className="my-2">
+              <span className={`badge ${form.color} p-2`}>
+                Preview: {form.color}
+              </span>
+            </div>
+
             <input
               name="title"
               value={form.title}
@@ -210,6 +246,7 @@ export default function AdminSteps() {
               className="form-control mb-2"
               placeholder="Title"
             />
+
             <textarea
               name="description"
               value={form.description}
@@ -236,8 +273,8 @@ export default function AdminSteps() {
                     ? "Updating..."
                     : "Creating..."
                   : editing
-                  ? "Update"
-                  : "Create"}
+                    ? "Update"
+                    : "Create"}
               </button>
             </div>
           </div>

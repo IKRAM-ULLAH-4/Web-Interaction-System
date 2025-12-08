@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "http://localhost:5000/api";
+const baseURL = "https://web-interaction-system.vercel.app/api";
 
 const instance = axios.create({
   baseURL,
@@ -41,17 +41,11 @@ export const getCurrentUser = async () => {
 
 // -------- CHAT / USERS ----------
 export const getAllUsersForChat = async () => {
-  try {
-    const res = await instance.get("/user"); // axios instead of fetch
-    return res.data;
-  } catch (err) {
-    console.error("Error fetching users:", err);
-    throw err.response?.data || { message: "Failed to fetch users" };
-  }
+  const res = await instance.get("/user");
+  return res.data;
 };
 
-// -------- ADMIN  ----------
-
+// -------- ADMIN ----------
 export const deleteUserByEmail = async (email) => {
   const res = await instance.delete(`/admin/users?email=${email}`);
   return res.data;
@@ -63,13 +57,19 @@ export const searchUsersByEmail = async (query) => {
   return res.data;
 };
 
-// -------- PROFILE ----------
-export const updateProfile = async ({ fullName, avatarFile }) => {
-  const form = new FormData();
-  if (fullName) form.append("fullName", fullName);
-  if (avatarFile) form.append("avatar", avatarFile);
+// -------- PROFILE ✅ FIXED ----------
+export const updateProfile = async (formData) => {
+  /**
+   * ✔ MUST be FormData
+   * ✔ multer backend compatible
+   * ✔ supports text-only or file upload
+   */
+  const res = await instance.put("/profile", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
-  const res = await instance.put("/profile", form);
   return res.data;
 };
 
@@ -94,7 +94,7 @@ export const removeMessage = async (id) => {
   return res.data;
 };
 
-// -------- FEATURES & STEPS ----------
+// -------- FEATURES ----------
 export const getFeatures = async () => {
   const res = await instance.get("/features");
   return res.data;
@@ -118,8 +118,8 @@ export const deleteFeatureById = async (id) => {
   const res = await instance.delete(`/features/${id}`);
   return res.data;
 };
-// ----------
 
+// -------- STEPS ----------
 export const getSteps = async () => {
   const res = await instance.get("/steps");
   return res.data;

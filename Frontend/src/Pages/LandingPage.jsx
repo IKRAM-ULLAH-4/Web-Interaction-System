@@ -7,13 +7,16 @@ import Contact from "../Components/Contact";
 import HowItWorks from "../Components/HowItWorks";
 import UpgradeButton from "../Components/UpgradeButton";
 import { Link } from "react-router-dom";
+import { UserInfo } from "../Context/UserInfoContext";
 function LandingPage() {
+
+  const {number} = UserInfo();
   return (
     <>
       <div>
         <Navbar />
       </div>
-
+      {/* <h1>{number}</h1> */}
       <div>
         <HeroSection />
       </div>

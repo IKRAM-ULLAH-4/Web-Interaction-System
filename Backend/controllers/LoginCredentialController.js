@@ -35,6 +35,7 @@ export const createCredentials = async (req, res) => {
 
     // Generate token using external helper
     const token = generateToken({ id: newUser._id, email: newUser.email });
+console.log(token);
 
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
@@ -60,6 +61,8 @@ export const createCredentials = async (req, res) => {
 
 export const getLoginCredentials = async (req, res) => {
   try {
+    console.log("Hit shO");
+    
     const { email, password } = req.body;
     if (!email || !password)
       return res.status(400).json({ message: "Missing email or password" });

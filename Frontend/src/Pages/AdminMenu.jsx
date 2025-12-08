@@ -50,7 +50,7 @@ export default function AdminMenu() {
               onClick={() => setActive("activities")}
               className={active === "activities" ? "active" : ""}
             >
-              <FaClipboardList /> Activities
+              <FaClipboardList /> Admin Activities 
             </Link>
           </li>
 

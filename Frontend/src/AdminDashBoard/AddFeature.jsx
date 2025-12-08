@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
-const API_URL = "http://localhost:5000/api/features";
+// const API_URL = "http://localhost:5000/api/features";
+const API_URL = "https://web-interaction-system.vercel.app/api/features"
 
 export default function AddFeature() {
   const [features, setFeatures] = useState([]);
@@ -60,7 +61,7 @@ export default function AddFeature() {
       text: feature.text,
       link: feature.link,
     });
-    setPreview(`http://localhost:5000${feature.img}`);
+    setPreview(`https://web-interaction-system.vercel.app${feature.img}`);
     setShowModal(true);
   };
 
@@ -124,7 +125,7 @@ export default function AddFeature() {
             <tr key={f._id}>
               <td>
                 <img
-                  src={`http://localhost:5000${f.img}`}
+                  src={`https://web-interaction-system.vercel.app${f.img}`}
                   width="80"
                   height="60"
                   style={{ objectFit: "cover" }}

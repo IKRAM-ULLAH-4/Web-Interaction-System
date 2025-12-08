@@ -50,7 +50,7 @@ function Features() {
                 style={{ width: "18rem" }}
               >
                 <img
-                  src={`http://localhost:5000${feature.img}`}
+                  src={`https://web-interaction-system.vercel.app${feature.img}`}
                   className="card-img-top"
                   alt={feature.title}
                 />
