@@ -26,7 +26,8 @@ export default function ChatApp() {
           {/* Profile Info */}
           <div className="d-flex align-items-center">
             <img
-              src={currentUser?.avatar || "/default-avatar.png"}
+              src={currentUser?.avatar || "/Default-avatar.png"}
+              
               alt="Me"
               className="rounded-circle border"
               width="45"
