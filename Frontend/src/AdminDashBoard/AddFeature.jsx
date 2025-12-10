@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 // const API_URL = "http://localhost:5000/api/features";
-const API_URL = "https://kwick-server.onrender.com/api/features"
+const API_URL = "https://kwick-server.onrender.com/api/features";
 
 export default function AddFeature() {
   const [features, setFeatures] = useState([]);

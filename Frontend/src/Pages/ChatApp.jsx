@@ -12,6 +12,9 @@ export default function ChatApp() {
   const { currentUser, contacts, selectedContact, setSelectedContact } =
     useContext(UserChatContext);
 
+    console.log(contacts);
+    
+
   return (
     <div className="d-flex vh-100 chat-app overflow-hidden">
       {/* LEFT PANEL - Contacts */}
@@ -26,8 +29,7 @@ export default function ChatApp() {
           {/* Profile Info */}
           <div className="d-flex align-items-center">
             <img
-              src={currentUser?.avatar || "/Default-avatar.png"}
-              
+              src={currentUser?.avatar || "/default-avatar.png"}
               alt="Me"
               className="rounded-circle border"
               width="45"

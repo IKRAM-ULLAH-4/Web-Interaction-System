@@ -2,6 +2,11 @@ import { createContext, useEffect, useState } from "react";
 import { getCurrentUser, getAllUsersForChat } from "../Service/api";
 
 const BACKEND_URL = "https://kwick-server.onrender.com";
+// const BACKEND_URL = "http://localhost:5000"
+
+// default consistent with backend
+const DEFAULT_AVATAR_PATH = "/uploads/Default.jpg";
+const FALLBACK_AVATAR_FULL = `${BACKEND_URL}${DEFAULT_AVATAR_PATH}`;
 
 export const UserChatContext = createContext({
   currentUser: null,
@@ -20,10 +25,17 @@ const UserChatProvider = ({ children }) => {
   const [contactsError, setContactsError] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
 
+  // Robust avatar URL builder:
+  // - If avatar falsy -> fallback
+  // - If avatar starts with "http" -> return as-is
+  // - If avatar starts with "/" -> prefix BACKEND_URL
+  // - Else -> add leading slash and prefix
   const getAvatarUrl = (avatar) => {
-    if (!avatar) return "/default-avatar.png";
+    if (!avatar) return FALLBACK_AVATAR_FULL;
+    if (typeof avatar !== "string") return FALLBACK_AVATAR_FULL;
     if (avatar.startsWith("http")) return avatar;
-    return `${BACKEND_URL}${avatar}`;
+    const path = avatar.startsWith("/") ? avatar : `/${avatar}`;
+    return `${BACKEND_URL}${path}`;
   };
 
   // Load current user
@@ -37,7 +49,7 @@ const UserChatProvider = ({ children }) => {
             id: u._id,
             fullName: u.fullName,
             email: u.email,
-            avatar: u.avatar ? getAvatarUrl(u.avatar) : "/default-avatar.png",
+            avatar: getAvatarUrl(u.avatar),
           });
         }
       } catch (err) {
@@ -63,7 +75,7 @@ const UserChatProvider = ({ children }) => {
             fullName: u.fullName || u.email,
             email: u.email,
             status: "offline",
-            avatar: u.avatar ? getAvatarUrl(u.avatar) : "/default-avatar.png",
+            avatar: getAvatarUrl(u.avatar),
             lastMessage: u.lastMessage || "",
           }));
         setContacts(filtered);
@@ -88,6 +100,7 @@ const UserChatProvider = ({ children }) => {
         contactsError,
         selectedContact,
         setSelectedContact,
+        
       }}
     >
       {children}

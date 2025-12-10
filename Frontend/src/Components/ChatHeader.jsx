@@ -24,11 +24,12 @@ const ChatHeader = ({ onBack }) => {
         <img
           src={selectedContact.avatar}
           alt={selectedContact.name}
-          className="avatar-clean-md me-2"
+          className="rounded-circle me-2"
+          width="40"
+          height="40"
           style={{ cursor: "pointer" }}
           onClick={() => setShowProfile(true)}
         />
-
         <div>
           <div className="fw-bold">{selectedContact.name}</div>
           <div className="text-muted small">{selectedContact.status}</div>
@@ -41,17 +42,6 @@ const ChatHeader = ({ onBack }) => {
         onClose={() => setShowProfile(false)}
         user={selectedContact}
       />
-
-      <style jsx>{`
-        .avatar-clean-md {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          object-fit: cover;
-          object-position: center;
-          border: 1px solid #ccc;
-        }
-      `}</style>
     </>
   );
 };
