@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
-// const API_URL = "http://localhost:5000/api/features";
-const API_URL = "https://kwick-server.onrender.com/api/features";
+const API_URL = "https://kwick-backend.onrender.com/api/features";
 
 export default function AddFeature() {
   const [features, setFeatures] = useState([]);
@@ -61,7 +60,7 @@ export default function AddFeature() {
       text: feature.text,
       link: feature.link,
     });
-    setPreview(`https://kwick-server.onrender.com${feature.img}`);
+    setPreview(`https://kwick-backend.onrender.com${feature.img}`);
     setShowModal(true);
   };
 
@@ -125,7 +124,7 @@ export default function AddFeature() {
             <tr key={f._id}>
               <td>
                 <img
-                  src={`https://kwick-server.onrender.com${f.img}`}
+                  src={`https://kwick-backend.onrender.com${f.img}`}
                   width="80"
                   height="60"
                   style={{ objectFit: "cover" }}

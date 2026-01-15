@@ -4,10 +4,13 @@ import { UserChatContext } from "../Context/UserChatContext";
 import UserProfileModal from "./UserProfileModal";
 
 const ChatHeader = ({ onBack }) => {
-  const { selectedContact, setSelectedContact } = useContext(UserChatContext);
+  const { selectedContact, setSelectedContact, onlineUsers } = useContext(UserChatContext);
   const [showProfile, setShowProfile] = useState(false);
 
   if (!selectedContact) return null;
+
+  // Determine if the selected contact is online
+  const isOnline = onlineUsers.includes(selectedContact.id);
 
   return (
     <>
@@ -32,7 +35,10 @@ const ChatHeader = ({ onBack }) => {
         />
         <div>
           <div className="fw-bold">{selectedContact.name}</div>
-          <div className="text-muted small">{selectedContact.status}</div>
+          {/* Show dynamic online/offline status */}
+          <div className={`small ${isOnline ? "text-success fw-bold" : "text-muted"}`}>
+            {isOnline ? "Online" : "Offline"}
+          </div>
         </div>
       </div>
 

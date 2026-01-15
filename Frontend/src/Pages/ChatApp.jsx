@@ -12,9 +12,6 @@ export default function ChatApp() {
   const { currentUser, contacts, selectedContact, setSelectedContact } =
     useContext(UserChatContext);
 
-    console.log(contacts);
-    
-
   return (
     <div className="d-flex vh-100 chat-app overflow-hidden">
       {/* LEFT PANEL - Contacts */}
@@ -38,9 +35,10 @@ export default function ChatApp() {
 
             <div className="ms-2">
               <div className="fw-bold small">
-                {currentUser?.fullName}
+                {currentUser?.fullName || "User"}
               </div>
-              <div className="text-success small">
+              {/* Show green "Online" badge for the current user */}
+              <div className="text-success small fw-bold">
                 Online
               </div>
             </div>

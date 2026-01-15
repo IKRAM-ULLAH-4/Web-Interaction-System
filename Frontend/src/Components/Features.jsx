@@ -3,16 +3,15 @@ import { getFeatures } from "../Service/api";
 
 function Features() {
   const [features, setFeatures] = useState([]);
-  const [loading, setLoading] = useState(true); // track loading state
-  const [error, setError] = useState(null); // track network errors
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-
     getFeatures()
       .then((data) => {
-        setFeatures(data);
+        // ✅ Handles BOTH response shapes:
+        // { features: [...] } OR [...]
+        setFeatures(data.features || data);
         setLoading(false);
       })
       .catch((err) => {
@@ -22,51 +21,69 @@ function Features() {
       });
   }, []);
 
+  if (loading) {
+    return (
+      <div className="text-center my-5">
+        <div className="spinner-border text-primary" role="status" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger text-center my-5">
+        {error}
+      </div>
+    );
+  }
+
   return (
     <section id="feature" className="py-5 bg-light">
       <div className="container">
         <h2 className="text-center mb-4 fw-bold">Features</h2>
 
-        {loading && (
-          <div className="text-center my-5">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        )}
+        <div className="d-flex flex-wrap gap-3 justify-content-center">
+          {features.map((feature) => (
+            <div
+              key={feature._id}
+              className="card shadow"
+              style={{ width: "18rem" }}
+            >
+              {
+              console.log("Rendering feature:", feature.img)
+              }
+              {
+              feature.img && (
+               <img
+  src={`https://kwick-backend.onrender.com${encodeURI(feature.img)}`}
+  className="card-img-top"
+  alt={feature.title}
+  style={{ height: "180px", objectFit: "cover" }}
+  onError={(e) => {
+    console.error("❌ Image failed:", feature.img);
+    e.currentTarget.style.display = "none";
+  }}
+/>
+              )}
 
-        {error && (
-          <div className="alert alert-danger text-center my-5">
-            {error}
-          </div>
-        )}
+              <div className="card-body">
+                <h5 className="card-title">{feature.title}</h5>
+                <p className="card-text">{feature.text}</p>
 
-        {!loading && !error && (
-          <div className="d-flex flex-wrap gap-3 justify-content-center">
-            {features.map((feature) => (
-              <div
-                key={feature._id}
-                className="card shadow"
-                style={{ width: "18rem" }}
-              >
-                <img
-                  src={`https://kwick-server.onrender.com${feature.img}`}
-                  className="card-img-top"
-                  alt={feature.title}
-                />
-                <div className="card-body">
-                  <h5 className="card-title">{feature.title}</h5>
-                  <p className="card-text">{feature.text}</p>
-                  {feature.link && (
-                    <a href={feature.link} className="btn btn-primary mt-2">
-                      Learn More
-                    </a>
-                  )}
-                </div>
+                {feature.link && (
+                  <a
+                    href={feature.link}
+                    className="btn btn-primary mt-2"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Learn More
+                  </a>
+                )}
               </div>
-            ))}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

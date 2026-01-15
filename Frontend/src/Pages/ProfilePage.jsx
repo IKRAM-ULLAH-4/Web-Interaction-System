@@ -4,8 +4,7 @@ import { updateProfile } from "../Service/api";
 import { UserChatContext } from "../Context/UserChatContext";
 import defaultProfile from "../assets/logo.png";
 
-// const BACKEND_URL = "http://localhost:5000";
-const BACKEND_URL = "https://kwick-server.onrender.com"
+const BACKEND_URL = "https://kwick-backend.onrender.com";
 
 export default function ProfilePage() {
   const { currentUser, setCurrentUser } = useContext(UserChatContext);

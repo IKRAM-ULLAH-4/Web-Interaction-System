@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
-const API_URL = "https://kwick-server.onrender.com/api/steps";
-// const API_URL = "http://localhost:5000/api/steps";
+const API_URL = "https://kwick-backend.onrender.com/api/steps";
 
 export default function AdminSteps() {
   const [steps, setSteps] = useState([]);

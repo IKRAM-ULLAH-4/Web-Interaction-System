@@ -1,10 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import { getCurrentUser, getAllUsersForChat } from "../Service/api";
+import { io } from "socket.io-client";
 
-const BACKEND_URL = "https://kwick-server.onrender.com";
-// const BACKEND_URL = "http://localhost:5000"
-
-// default consistent with backend
+const BACKEND_URL = "https://kwick-backend.onrender.com";
 const DEFAULT_AVATAR_PATH = "/uploads/Default.jpg";
 const FALLBACK_AVATAR_FULL = `${BACKEND_URL}${DEFAULT_AVATAR_PATH}`;
 
@@ -16,6 +14,8 @@ export const UserChatContext = createContext({
   contactsError: null,
   selectedContact: null,
   setSelectedContact: () => {},
+  onlineUsers: [],
+  socket: null,
 });
 
 const UserChatProvider = ({ children }) => {
@@ -24,12 +24,9 @@ const UserChatProvider = ({ children }) => {
   const [loadingContacts, setLoadingContacts] = useState(true);
   const [contactsError, setContactsError] = useState(null);
   const [selectedContact, setSelectedContact] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+  const [socket, setSocket] = useState(null);
 
-  // Robust avatar URL builder:
-  // - If avatar falsy -> fallback
-  // - If avatar starts with "http" -> return as-is
-  // - If avatar starts with "/" -> prefix BACKEND_URL
-  // - Else -> add leading slash and prefix
   const getAvatarUrl = (avatar) => {
     if (!avatar) return FALLBACK_AVATAR_FULL;
     if (typeof avatar !== "string") return FALLBACK_AVATAR_FULL;
@@ -38,7 +35,6 @@ const UserChatProvider = ({ children }) => {
     return `${BACKEND_URL}${path}`;
   };
 
-  // Load current user
   useEffect(() => {
     const loadUser = async () => {
       try {
@@ -59,7 +55,31 @@ const UserChatProvider = ({ children }) => {
     loadUser();
   }, []);
 
-  // Load contacts after currentUser is ready
+  useEffect(() => {
+    if (!currentUser?.id) return;
+
+    const socketIo = io(BACKEND_URL);
+    setSocket(socketIo);
+
+    socketIo.emit("join", currentUser.id);
+
+    socketIo.on("onlineUsers", (users) => {
+      setOnlineUsers(users);
+    });
+
+    socketIo.on("userOnline", (userId) => {
+      setOnlineUsers((prev) => [...new Set([...prev, userId])]);
+    });
+
+    socketIo.on("userOffline", (userId) => {
+      setOnlineUsers((prev) => prev.filter((id) => id !== userId));
+    });
+
+    return () => {
+      socketIo.disconnect();
+    };
+  }, [currentUser]);
+
   useEffect(() => {
     if (!currentUser?.email) return;
 
@@ -100,7 +120,8 @@ const UserChatProvider = ({ children }) => {
         contactsError,
         selectedContact,
         setSelectedContact,
-        
+        onlineUsers,
+        socket,
       }}
     >
       {children}

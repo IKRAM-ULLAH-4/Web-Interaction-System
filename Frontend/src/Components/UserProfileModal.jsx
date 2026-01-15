@@ -8,7 +8,7 @@ const UserProfileModal = ({ show, onClose, user }) => {
   const avatarUrl = user.avatar
     ? user.avatar.startsWith("http")
       ? user.avatar
-      : `https://kwick-server.onrender.com${user.avatar}`
+      : `https://kwick-backend.onrender.com/${user.avatar}`
     : defaultAvatar;
 
   return (
